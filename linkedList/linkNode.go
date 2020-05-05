@@ -312,3 +312,78 @@ func swapPairs(head *Node) *Node {
 	}
 	return dump.Next
 }
+
+/*
+插入排序的动画演示如上。从第一个元素开始，该链表可以被认为已经部分排序（用黑色表示）。
+每次迭代时，从输入数据中移除一个元素（用红色表示），并原地将其插入到已排好序的链表中。
+
+插入排序算法：
+
+插入排序是迭代的，每次只移动一个元素，直到所有元素可以形成一个有序的输出列表。
+每次迭代中，插入排序只从输入数据中移除一个待排序的元素，找到它在序列中适当的位置，并将其插入。
+重复直到所有输入数据插入完为止。
+
+示例 1：
+
+输入: 4->2->1->3
+输出: 1->2->3->4
+示例 2：
+
+输入: -1->5->3->4->0
+输出: -1->0->3->4->5
+*/
+
+func insertionSortList(head *Node) *Node {
+	if head == nil {
+		return nil
+	}
+	dump := new(Node)
+	for head != nil {
+		prev := dump
+		next := head.Next
+		// 寻找插入点
+		for prev.Next != nil && prev.Next.Data.(int) < head.Data.(int) {
+			prev = prev.Next
+		}
+		head.Next = prev.Next
+		prev.Next = head
+		head = next
+	}
+	return dump.Next
+}
+
+/**
+
+1、题目
+输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，
+即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，
+它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。
+
+示例：
+给定一个链表: 1->2->3->4->5, 和 k = 2.
+返回链表 4->5.
+
+
+1、解决思路
+快慢指针
+定义两个指针，快指针 fastfast， 慢指针 lowlow .
+让 fastfast 先向前移动 kk 个位置，然后 lowlow 和 fastfast 再一起向前移动 .
+当 fastfast 到达链表尾部，返回 lowlow .
+
+*/
+func getKthFromEnd(head *Node, k int) *Node {
+
+	fmt.Println(k)
+	slow := head
+	fast := head
+
+	for fast != nil {
+		fast = fast.Next
+		if k == 0 {
+			slow = slow.Next
+		} else {
+			k--
+		}
+	}
+	return slow
+}

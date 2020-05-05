@@ -71,7 +71,7 @@ func main() {
 
 	// 链表相邻节点交换
 
-	list := List{}
+	/*list := List{}
 	list.append(1)
 	list.append(2)
 	list.append(3)
@@ -86,6 +86,47 @@ func main() {
 	fmt.Printf("交换后的链表")
 
 	node := swapPairs(list.headNode)
+	list2 := List{node}
+	list2.showList()*/
+
+	/*list := List{}
+	list.append(4)
+	list.append(1)
+	list.append(2)
+	list.append(3)
+	list.append(7)
+	list.append(5)
+
+	fmt.Printf("交换前的链表")
+	list.showList()
+	fmt.Println()
+
+	fmt.Printf("交换后的链表")
+
+	node := insertionSortList(list.headNode)
+	list2 := List{node}
+	list2.showList()*/
+
+	list := List{}
+	list.append(4)
+	list.append(1)
+	list.append(2)
+	list.append(3)
+	list.append(7)
+	list.append(5)
+
+	fmt.Printf("交换前的链表")
+	list.showList()
+	fmt.Println()
+
+	fmt.Printf("交换后的链表")
+
+	fmt.Println(list.headNode.Data)
+
+	node := getKthFromEnd(list.headNode, 5)
+
+	fmt.Println(node.Data)
+
 	list2 := List{node}
 	list2.showList()
 
