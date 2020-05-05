@@ -107,7 +107,7 @@ func main() {
 	list2 := List{node}
 	list2.showList()*/
 
-	list := List{}
+	/*list := List{}
 	list.append(4)
 	list.append(1)
 	list.append(2)
@@ -128,6 +128,24 @@ func main() {
 	fmt.Println(node.Data)
 
 	list2 := List{node}
-	list2.showList()
+	list2.showList()*/
+
+	// 链表中间节点
+	list := List{}
+	list.append(4)
+	list.append(1)
+	list.append(2)
+	list.append(3)
+	list.append(7)
+	list.append(5)
+
+	fmt.Printf("初始化链表")
+	list.showList()
+	fmt.Println()
+
+	fmt.Printf("中间节点：")
+	node := middleNode(list.headNode)
+
+	fmt.Println(node.Data)
 
 }
