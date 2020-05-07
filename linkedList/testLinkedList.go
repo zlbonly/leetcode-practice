@@ -148,7 +148,7 @@ func main() {
 
 	fmt.Println(node.Data)*/
 
-	list := List{}
+	/*list := List{}
 	list.append(4)
 	list.append(1)
 	list.append(2)
@@ -162,6 +162,23 @@ func main() {
 
 	fmt.Printf("奇偶节点：")
 	node := oddEvenList(list.headNode)
+	list2 := List{node}
+	list2.showList()*/
+
+	list := List{}
+	list.append(1)
+	list.append(2)
+	list.append(3)
+	list.append(4)
+	list.append(5)
+	list.append(6)
+
+	fmt.Printf("初始化链表")
+	list.showList()
+	fmt.Println()
+
+	fmt.Printf(" 重排链表：")
+	node := reorderList(list.headNode)
 	list2 := List{node}
 	list2.showList()
 

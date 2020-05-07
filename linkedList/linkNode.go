@@ -476,3 +476,89 @@ func oddEvenList(head *Node) *Node {
 	odd.Next = evenHead
 	return head
 }
+
+func reverseNode(head *Node) *Node {
+	if head.Next == nil {
+		return head
+	}
+	last := reverseNode(head.Next)
+	head.Next.Next = head
+	head.Next = nil
+	return last
+}
+
+func reverseN(head *Node, n int) *Node {
+	successor := &Node{}
+	if n == 1 {
+		successor = head.Next
+		return head
+	}
+	last := reverseN(head.Next, n-1)
+	head.Next.Next = head
+	head.Next = successor
+	return last
+}
+
+/*func reverseBetween(head *Node,m int,n int) *Node   {
+
+}*/
+
+/*
+
+1、问题描述
+给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
+将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
+
+你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+示例 1:
+
+给定链表 1->2->3->4, 重新排列为 1->4->2->3.
+示例 2:
+
+给定链表 1->2->3->4->5, 重新排列为 1->5->2->4->3.
+
+
+2、解决方案
+
+1 -> 2 -> 3 -> 4 -> 5 -> 6
+第一步，将链表平均分成两半
+1 -> 2 -> 3
+4 -> 5 -> 6
+
+第二步，将第二个链表逆序
+1 -> 2 -> 3
+6 -> 5 -> 4
+
+第三步，依次连接两个链表
+1 -> 6 -> 2 -> 5 -> 3 -> 4
+*/
+
+func reorderList(head *Node) *Node {
+
+	if head == nil || head.Next == nil || head.Next.Next == nil {
+		return nil
+	}
+
+	a := head
+	slow := head
+	fast := head
+	for fast.Next != nil && fast.Next.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	newHead := slow.Next
+
+	slow.Next = nil
+	// 将第二个链表反转
+	newHead = reverseNode(newHead)
+	// 合并两个连链表
+	for newHead != nil {
+		temp := newHead.Next
+		newHead.Next = head.Next
+		head.Next = newHead
+		head = newHead.Next
+		newHead = temp
+	}
+	return a
+}
