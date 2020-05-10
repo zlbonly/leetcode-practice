@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func main() {
 	/*list := List{}
@@ -182,7 +184,7 @@ func main() {
 	list2 := List{node}
 	list2.showList()*/
 
-	// 回文链表
+	/*// 回文链表
 	list := List{}
 	list.append(1)
 	list.append(2)
@@ -197,6 +199,23 @@ func main() {
 
 	fmt.Printf(" 重排链表：")
 	ispalind := isPalindrome(list.headNode)
-	fmt.Println(ispalind)
+	fmt.Println(ispalind)*/
 
+	// 环形链表
+	list := List{}
+	list.append(1)
+	list.append(2)
+	list.append(3)
+	list.append(3)
+	list.append(2)
+	list.append(1)
+
+	fmt.Printf("初始化链表")
+	list.showList()
+	fmt.Println()
+
+	fmt.Printf(" 常见环形连标：")
+	cycleNode := createCycle(list.headNode, 1)
+	hasCycle := hasCycle(cycleNode)
+	fmt.Println(hasCycle)
 }
