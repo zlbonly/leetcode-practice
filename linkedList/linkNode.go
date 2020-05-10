@@ -562,3 +562,61 @@ func reorderList(head *Node) *Node {
 	}
 	return a
 }
+
+/**
+请判断一个链表是否为回文链表。
+
+示例 1:
+
+输入: 1->2
+输出: false
+示例 2:
+
+输入: 1->2->2->1
+输出: true
+进阶：
+你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+
+解决方案：
+时间复杂度：O(n)O(n)，其中 nn 指的是链表的大小。
+空间复杂度：O(1)O(1)，我们是一个接着一个的改变指针，我们在堆栈上的堆栈帧不超过 O(1)O(1)。
+
+*/
+func isPalindrome(head *Node) bool {
+	if head == nil {
+		return false
+	}
+	slow := head
+	fast := head
+	// 1、找到链表的中点，链表长度奇偶不影响
+	for fast != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
+	}
+	//2、将slow之后链表进行断开且反转，最后翻转完成之后pre指向反转链表的头节点
+	pre := &Node{
+		Data: nil,
+		Next: nil,
+	}
+	for slow != nil {
+		temp := slow.Next
+		slow.Next = pre
+		pre = slow
+		slow = temp
+	}
+	//3、前后链表进行比较，注意若为奇数链表，后半部分回比前部分多1一个节点，然而我们只比较相同长度的节点值，巧妙地避开这点判断
+
+	fmt.Print(head.Data)
+	fmt.Print(pre.Data)
+	fmt.Println()
+
+	for head != nil && pre.Next != nil {
+		fmt.Println(pre.Data)
+		if head.Data != pre.Data {
+			return false
+		}
+		head = head.Next
+		pre = pre.Next
+	}
+	return true
+}

@@ -165,7 +165,7 @@ func main() {
 	list2 := List{node}
 	list2.showList()*/
 
-	list := List{}
+	/*list := List{}
 	list.append(1)
 	list.append(2)
 	list.append(3)
@@ -180,6 +180,23 @@ func main() {
 	fmt.Printf(" 重排链表：")
 	node := reorderList(list.headNode)
 	list2 := List{node}
-	list2.showList()
+	list2.showList()*/
+
+	// 回文链表
+	list := List{}
+	list.append(1)
+	list.append(2)
+	list.append(3)
+	list.append(3)
+	list.append(2)
+	list.append(1)
+
+	fmt.Printf("初始化链表")
+	list.showList()
+	fmt.Println()
+
+	fmt.Printf(" 重排链表：")
+	ispalind := isPalindrome(list.headNode)
+	fmt.Println(ispalind)
 
 }
