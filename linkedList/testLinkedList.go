@@ -1,8 +1,6 @@
 package main
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func main() {
 	/*list := List{}
@@ -201,7 +199,7 @@ func main() {
 	ispalind := isPalindrome(list.headNode)
 	fmt.Println(ispalind)*/
 
-	// 环形链表
+	/*// 环形链表
 	list := List{}
 	list.append(1)
 	list.append(2)
@@ -217,5 +215,34 @@ func main() {
 	fmt.Printf(" 常见环形连标：")
 	cycleNode := createCycle(list.headNode, 1)
 	hasCycle := hasCycle(cycleNode)
-	fmt.Println(hasCycle)
+	fmt.Println(hasCycle)*/
+
+	// 两个链表相加
+	list1 := List{}
+	list1.append(2)
+	list1.append(4)
+	list1.append(3)
+
+	// 两个链表相加
+	list2 := List{}
+	list2.append(5)
+	list2.append(6)
+	list2.append(4)
+
+	fmt.Printf("初始化链表1")
+	list1.showList()
+	fmt.Println()
+
+	fmt.Printf("初始化链表1")
+	list2.showList()
+	fmt.Println()
+	fmt.Printf(" 常见环形连标：")
+
+	node := addTwoNumbers(list1.headNode, list2.headNode)
+	fmt.Println()
+	fmt.Printf(" 相加后链表：")
+
+	list3 := List{node}
+	list3.showList()
+
 }

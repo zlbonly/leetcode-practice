@@ -721,3 +721,58 @@ func getIntersectionNode(heada *Node, headb *Node) *Node {
 
 	return t1
 }
+
+/**
+题目：
+给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+
+如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
+
+您可以假设除了数字 0 之外，这两个数都不会以 0 开头。
+
+示例：
+
+输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
+输出：7 -> 0 -> 8
+原因：342 + 465 = 807
+
+不过代码上做了合并优化，特别是while循环里面的处理应该好好琢磨琢磨。
+特别注意的是这里返回的是dummyHead.next也蛮巧妙的，
+省去了链表开头或结尾的情况判断；以及carry进位标记的设置。
+*/
+
+func addTwoNumbers(head1 *Node, head2 *Node) *Node {
+	dummyHead := &Node{}
+
+	curr := dummyHead
+	p1 := head1
+	p2 := head2
+	carry := 0
+	for p1 != nil && p2 != nil {
+		x := 0
+		if p1 != nil {
+			x = p1.Data.(int)
+		}
+
+		y := 0
+		if p2 != nil {
+			y = p2.Data.(int)
+		}
+		sum := carry + x + y
+		carry = sum / 10
+		curr.Next = &Node{}
+		curr.Next.Data = sum % 10
+		curr = curr.Next
+		if p1 != nil {
+			p1 = p1.Next
+		}
+		if p2 != nil {
+			p2 = p2.Next
+		}
+	}
+	if carry > 0 {
+		curr.Next = &Node{}
+		curr.Next.Data = carry
+	}
+	return dummyHead.Next
+}
