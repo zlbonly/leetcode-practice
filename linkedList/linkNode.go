@@ -693,3 +693,31 @@ func hasCycle(head *Node) bool {
 	}
 	return false
 }
+
+/**
+	双指针法 求相交连表的节点
+因为如果链表A和链表B相交于D的话,那么说明D结点即在A上又在B上,而D之后的元素自然也就均在A和B上了,因为他们是通过next指针相连的.
+
+如果有相交的结点D的话,每条链的头结点先走完自己的链表长度,然后回头走另外的一条链表,那么两结点一定为相交于D点,因为这时每个头结点走的距离是一样的,都是 AD + BD + DC,而他们每次又都是前进1,所以距离相同,速度又相同,固然一定会在相同的时间走到相同的结点上,即D点
+
+*/
+func getIntersectionNode(heada *Node, headb *Node) *Node {
+	if heada == nil || headb == nil {
+		return nil
+	}
+	t1 := heada
+	t2 := headb
+	for t1 != t2 {
+		if t1 == nil {
+			t1 = headb
+		}
+		t1 = t1.Next
+
+		if t2 == nil {
+			t2 = heada
+		}
+		t2 = t2.Next
+	}
+
+	return t1
+}
