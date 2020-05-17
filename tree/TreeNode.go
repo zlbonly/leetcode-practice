@@ -80,3 +80,24 @@ func (node *Node) layer() int {
 	}
 
 }
+
+/**
+ 5、题目描述：
+给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。
+说明: 叶子节点是指没有子节点的节点。
+
+解决方案：
+最直接的方法就是利用递归，遍历整棵树：如果当前节点不是叶子，对它的所有孩子节点，
+递归调用 hasPathSum 函数，其中 sum 值减去当前节点的权值；
+如果当前节点是叶子，检查 sum 值是否为 0，也就是是否找到了给定的目标和。
+*/
+func hasPathSum(root *Node, sum int) bool {
+	if root == nil {
+		return false
+	}
+	sum -= root.Value
+	if root.Left == nil && root.Right == nil {
+		return sum == 0
+	}
+	return hasPathSum(root.Left, sum) || hasPathSum(root.Right, sum)
+}
