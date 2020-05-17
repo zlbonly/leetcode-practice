@@ -217,7 +217,7 @@ func main() {
 	hasCycle := hasCycle(cycleNode)
 	fmt.Println(hasCycle)*/
 
-	// 两个链表相加
+	/*// 两个链表相加
 	list1 := List{}
 	list1.append(2)
 	list1.append(4)
@@ -243,6 +243,67 @@ func main() {
 	fmt.Printf(" 相加后链表：")
 
 	list3 := List{node}
+	list3.showList()*/
+
+	// 环形链表入口点
+	/*list := List{}
+	list.append(1)
+	list.append(2)
+	list.append(3)
+	list.append(4)
+	list.append(5)
+	list.append(6)
+	list.append(7)
+	list.append(8)
+	list.append(9)
+
+	fmt.Printf("初始化链表")
+	list.showList()
+	fmt.Println()
+
+	fmt.Printf(" 常见环形连标：")
+	cycleNode := createCycle(list.headNode, 5)
+	hasCycle := hasCycle(cycleNode)
+	fmt.Println(hasCycle)
+
+	detectNode := detectCycle(cycleNode)
+	fmt.Printf(" 入口节点：")
+	fmt.Print(detectNode.Data)*/
+
+	//合并K有序链表
+
+	list := List{}
+	list.append(1)
+	list.append(5)
+	list.append(6)
+	fmt.Printf("list1链表的数值")
+	list.showList()
+
+	fmt.Println()
+	list1 := List{}
+	list1.append(4)
+	list1.append(9)
+	list1.append(10)
+	list1.append(11)
+
+	fmt.Printf("list2链表的数值")
+	list1.showList()
+	fmt.Println()
+
+	list3 := List{}
+	list3.append(2)
+	list3.append(7)
+	list3.append(13)
+	list3.append(20)
+
+	fmt.Printf("list3链表的数值")
 	list3.showList()
+	fmt.Println()
+	fmt.Printf("合并后链表：")
+
+	arrList := []*Node{list.headNode, list1.headNode, list3.headNode}
+	node := mergeKLists(arrList)
+	list4 := List{node}
+	list4.showList()
 
 }
