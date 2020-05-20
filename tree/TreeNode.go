@@ -101,3 +101,26 @@ func hasPathSum(root *Node, sum int) bool {
 	}
 	return hasPathSum(root.Left, sum) || hasPathSum(root.Right, sum)
 }
+
+/**
+	1、题目描述： 翻转二叉树
+	2、解题方案： 使用递归
+	反转一颗空树结果还是一颗空树。对于一颗根为 rr，左子树为 \mbox{right}，
+	右子树为 \mbox{left} 的树来说，它的反转树是一颗根为 rr，
+	左子树为 \mbox{right} 的反转树，右子树为 \mbox{left} 的反转树的树。
+   3、算法分析
+	既然树中的每个节点都只被访问一次，那么时间复杂度就是 O(n)，
+	其中 n 是树中节点的个数。在反转之前，不论怎样我们至少都得访问每个节点至少一次，因此这个问题无法做地比 O(n)更好了。
+
+*/
+func invertTreeNode(root *Node) *Node {
+	if root == nil {
+		return nil
+	}
+	right := invertTreeNode(root.Right)
+	left := invertTreeNode(root.Left)
+
+	root.Right = left
+	root.Left = right
+	return root
+}
