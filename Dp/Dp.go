@@ -15,11 +15,23 @@ func main() {
 	/*arr := []int{7, 1, 5, 3, 6, 4}
 	a := maxProfit(arr)*/
 
-	//arr := []int{7, 1, 5, 3, 6, 4}
-	arr := []int{1, 2, 3, 4, 5}
-
+	// 4、 买卖股票最佳时机（2）
+	/*arr := []int{1, 2, 3, 4, 5}
 	b := maxProfitTwo(arr)
-	fmt.Println(b)
+	fmt.Println(b)*/
+
+	/*
+		// 5、不同路径（1）
+		path := uniquePaths(7,3)
+		fmt.Println(path)
+	*/
+
+	/*
+		6、不同路径 （2）
+		path := [][]int {{0,0,0},{0,1,0},{0,0,0}}
+		path_num := uniquePathsWithObstacles(path)
+		fmt.Println(path_num)
+	*/
 
 }
 
@@ -143,6 +155,105 @@ func maxProfitTwo(prices []int) int {
 		}
 	}
 	return maxProfit
+}
+
+/**
+题目描述： 不同路径 （1）
+	一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+问总共有多少条不同的路径？
+输入: m = 3, n = 2
+输出: 3
+解释:
+从左上角开始，总共有 3 条路径可以到达右下角。
+1. 向右 -> 向右 -> 向下
+2. 向右 -> 向下 -> 向右
+3. 向下 -> 向右 -> 向右
+
+解题思路：
+	我们令 dp[i][j] 是到达 i, j 最多路径
+动态方程：dp[i][j] = dp[i-1][j] + dp[i][j-1]
+注意，对于第一行 dp[0][j]，或者第一列 dp[i][0]，由于都是在边界，所以只能为 1
+算法分析：时间复杂度：O(m*n)，空间复杂度：O(m * n)
+
+*/
+func uniquePaths(m int, n int) int {
+	dp := make([][]int, m)
+	for i := 0; i < m; i++ {
+		dp[i] = make([]int, n)
+		for j := 0; j < n; j++ {
+			if i == 0 || j == 0 {
+				dp[i][j] = 1
+			} else {
+				dp[i][j] = dp[i][j-1] + dp[i-1][j]
+			}
+		}
+	}
+	return dp[m-1][n-1]
+}
+
+/*
+ 题目描述：  不同路径（II）
+位于一个 m x n 网格的左上角 （起始点在下图中标记为“Start” ）。
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为“Finish”）。
+现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？
+
+网格中的障碍物和空位置分别用 1 和 0 来表示。
+说明：m 和 n 的值均不超过 100。
+示例 1:
+输入:
+[
+  [0,0,0],
+  [0,1,0],
+  [0,0,0]
+]
+输出: 2
+解释:
+3x3 网格的正中间有一个障碍物。
+从左上角到右下角一共有 2 条不同的路径：
+1. 向右 -> 向右 -> 向下 -> 向下
+2. 向下 -> 向下 -> 向右 -> 向右
+
+题目分析：
+	算法
+
+如果第一个格点 obstacleGrid[0,0] 是 1，说明有障碍物，那么机器人不能做任何移动，我们返回结果 0。
+否则，如果 obstacleGrid[0,0] 是 0，我们初始化这个值为 1 然后继续算法。
+遍历第一行，如果有一个格点初始值为 1 ，说明当前节点有障碍物，没有路径可以通过，设值为 0 ；否则设这个值是前一个节点的值 obstacleGrid[i,j] = obstacleGrid[i,j-1]。
+遍历第一列，如果有一个格点初始值为 1 ，说明当前节点有障碍物，没有路径可以通过，设值为 0 ；否则设这个值是前一个节点的值 obstacleGrid[i,j] = obstacleGrid[i-1,j]。
+现在，从 obstacleGrid[1,1] 开始遍历整个数组，如果某个格点初始不包含任何障碍物，就把值赋为上方和左侧两个格点方案数之和 obstacleGrid[i,j] = obstacleGrid[i-1,j] + obstacleGrid[i,j-1]。
+如果这个点有障碍物，设值为 0 ，这可以保证不会对后面的路径产生贡献。
+
+*/
+func uniquePathsWithObstacles(obstacleGrid [][]int) int {
+	matrix := obstacleGrid
+	if len(matrix) == 0 || len(matrix[0]) == 0 || matrix[0][0] == 1 {
+		return 0
+	}
+	// 处理第一行
+	m, n := len(matrix), len(matrix[0])
+	dp := make([]int, n)
+	for j := 0; j < n; j++ {
+		if matrix[0][j] == 0 {
+			dp[j] = 1
+		} else {
+			break
+		}
+	}
+
+	for i := 1; i < m; i++ { // 从第二行开始
+		if matrix[i][0] == 1 { // 处理每一个的第一列
+			dp[0] = 0
+		}
+		for j := 1; j < n; j++ { // 从第二列开始
+			if matrix[i][j] == 1 { // 遇到1则到达第j列置为0
+				dp[j] = 0
+			} else {
+				dp[j] += dp[j-1]
+			}
+		}
+	}
+	return dp[n-1]
 }
 
 func max(a int, b int) int {
