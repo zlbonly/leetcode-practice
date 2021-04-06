@@ -19,6 +19,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -30,6 +31,9 @@ func main() {
 	ret := testCommonPrefix(s1)
 	fmt.Println("最长子前缀：%s", ret)
 
+	s2 := "ADOBECODEBANC"
+	s3 := "ABC"
+	fmt.Println(minWindow(s2, s3))
 }
 
 /*
@@ -64,4 +68,73 @@ func testCommonPrefix(strs []string) string {
 		}
 	}
 	return string(prefix)
+}
+
+/**
+最小覆盖子串 （重点）
+题目描述：
+	给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 ""
+	注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+	示例1：
+		输入：s = "ADOBECODEBANC", t = "ABC"
+		输出："BANC"
+
+	示例2：
+		输入：s = "a", t = "a"
+		输出："a"
+
+	思路：
+	方法一：滑动窗口
+思路和算法
+
+本问题要求我们返回字符串 ss 中包含字符串 tt 的全部字符的最小窗口。我们称包含 tt 的全部字母的窗口为「可行」窗口。
+
+我们可以用滑动窗口的思想解决这个问题。在滑动窗口类型的问题中都会有两个指针，一个用于「延伸」现有窗口的 rr 指针，
+和一个用于「收缩」窗口的 ll 指针。在任意时刻，只有一个指针运动，而另一个保持静止。
+我们在 ss 上滑动窗口，通过移动 rr 指针不断扩张窗口。当窗口包含 tt 全部所需的字符后，如果能收缩，我们就收缩窗口直到得到最小窗口。
+
+参考流程图分析：
+https://github.com/zlbonly/simple-go-algorithm/blob/master/pics/minWindow.gif
+
+*/
+func minWindow(s string, t string) string {
+	ori, cnt := map[byte]int{}, map[byte]int{}
+	for i := 0; i < len(t); i++ {
+		ori[t[i]]++
+	}
+
+	sLen := len(s)
+	len := math.MaxInt32
+	asrL, asrR := -1, -1
+
+	check := func() bool {
+		for k, v := range ori {
+			if cnt[k] < v {
+				return false
+			}
+		}
+		return true
+	}
+	for l, r := 0, 0; r < sLen; r++ {
+		if r < sLen && ori[s[r]] > 0 {
+			cnt[s[r]]++
+		}
+
+		for check() && l <= r {
+			if r-l+1 < len {
+				len = r - l + 1
+				asrL, asrR = l, l+len
+			}
+
+			if _, ok := ori[s[l]]; ok {
+				cnt[s[l]] -= 1
+			}
+			l++
+		}
+	}
+
+	if asrL == -1 {
+		return ""
+	}
+	return s[asrL:asrR]
 }
