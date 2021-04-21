@@ -154,3 +154,66 @@ func threeNum(nums []int) [][]int {
 	}
 	return ret
 }
+
+/**
+33. 搜索旋转排序数组
+	题目描述：
+		整数数组 nums 按升序排列，数组中的值 互不相同 。在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了 旋转，
+		使数组变为 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]（下标 从 0 开始 计数）。
+		例如， [0,1,2,4,5,6,7] 在下标 3 处经旋转后可能变为 [4,5,6,7,0,1,2] 给你 旋转后 的数组 nums 和一个整数 target ，如果 nums 中存在这个目标值 target ，则返回它的下标，否则返回 -1 。
+		（你可以设计一个时间复杂度为 O(log n) 的解决方案吗？）
+	示例1：
+		输入：nums = [4,5,6,7,0,1,2], target = 0
+		输出：4
+	示例2：
+		输入：nums = [4,5,6,7,0,1,2], target = 3
+		输出：-1
+
+	解题思路：
+		二分查找法：
+		1、先判断 nums[0] <= nums[mid]  时 说明 nums【0】 到 nums[mid] 是有序递增的。则判断 nums[0] < target < nums[mid] 时 right 向right-1 查找
+			否则 说明 target 在 nums[mid] ~ nums[n-1] 之间， left = mid+1
+		2、如果nums[0] > nums[mid】 说明  nums[0] ~ nums[mid] 无序，旋转点 在 0 ～ nums 之间 ， 如果 target < nums[n-1]
+
+	参考连接：https://leetcode-cn.com/problems/search-in-rotated-sorted-array/solution/ji-jian-solution-by-lukelee/
+
+*/
+func searchXuanZhuanNums(nums []int, target int) int {
+	length := len(nums)
+	if length == 0 {
+		return -1
+	}
+	if length == 1 {
+		if nums[0] == target {
+			return 0
+		} else {
+			return -1
+		}
+	}
+	left := 0
+	right := length - 1
+	for left < right {
+		mid := (left + right) / 2
+		if nums[mid] == target {
+			return mid
+		}
+		if nums[0] < nums[mid] {
+			if nums[0] < target && target < nums[mid] {
+				right = mid - 1
+			} else {
+				left = mid + 1
+			}
+		} else {
+			if nums[mid] < target && target < nums[length-1] {
+				left = mid + 1
+			} else {
+				right = mid - 1
+			}
+		}
+	}
+	if left == right && nums[left] == target {
+		return left
+	} else {
+		return -1
+	}
+}
