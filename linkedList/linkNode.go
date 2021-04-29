@@ -856,3 +856,76 @@ func addTwoNumbers(head1 *Node, head2 *Node) *Node {
 	}
 	return dummyHead.Next
 }
+
+/*
+	链表反转II
+	题目描述：
+			给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表
+	示例1：
+		1 -> 2 -> 3 -> 4 -> 5
+		1 -> 4 -> 3 -> 2 -> 5
+	输入：head = [1,2,3,4,5], left = 2, right = 4
+	输出：[1,4,3,2,5]
+
+	解题思路：
+		1、我们定义两个指针，分别是 g(guard 守卫)  和 p (ponit) ，我们首先根据方法的参数 m 确定 g 和 p 的位置。
+		将  g 移动到第一个要反转的节点的前面，将 p 移动到第一个 要反转的节点的 位置上 。。
+		2、将p 后面的元素删除，然后添加到g的后面去，也即头插法
+		3、根据 m 和 n 的重复步骤（2）
+		4、返回dummyHead.next
+*/
+func reverseBetween(head *Node, left int, right int) *Node {
+	dummyHead := &Node{Data: -1}
+	dummyHead.Next = head
+
+	// 初始化指针
+	g := dummyHead
+	p := dummyHead.Next
+
+	// 将指针移到相应的位置
+	for i := 0; i < left-1; i++ {
+		g = g.Next
+		p = p.Next
+	}
+
+	for i := 0; i < right-left; i++ {
+		removed := p.Next
+		p.Next = p.Next.Next
+		removed.Next = g.Next
+		g.Next = removed
+	}
+	return dummyHead.Next
+}
+
+/**
+	12 、分割链表
+	问题描述： 给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
+		你应当 保留 两个分区中每个节点的初始相对位置。
+
+示例：
+输入：head = [1,4,3,2,5,2], x = 3
+输出：[1,2,2,4,3,5]
+
+参考解题连接：https://leetcode-cn.com/problems/partition-list/solution/fen-ge-lian-biao-by-leetcode-solution-7ade/
+*/
+
+func partion(head *Node, x int) *Node {
+	small := &Node{}
+	large := &Node{}
+	smallHead := small
+	largeHead := large
+
+	for head != nil {
+		if head.Data.(int) < x {
+			small.Next = head
+			small = small.Next
+		} else {
+			large.Next = head
+			large = large.Next
+		}
+		head = head.Next
+	}
+	largeHead = nil
+	small.Next = largeHead.Next
+	return smallHead.Next
+}

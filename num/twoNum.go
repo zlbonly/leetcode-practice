@@ -18,14 +18,17 @@ func main() {
 	ret := twoNum(nums, 9)
 	fmt.Println("返回他们的数组下标：", ret)*/
 
-	nums := []int{-4, -1, -1, 0, 1, 2}
+	/*nums := []int{-4, -1, -1, 0, 1, 2}
 
 	ret := threeNum(nums)
 	fmt.Printf("%v", nums)
 	fmt.Println("")
-	fmt.Printf("%v", ret)
+	fmt.Printf("%v", ret)*/
 	/*k := 5
 	cutNum(nums, k)*/
+
+	nums := []int{2, 7, 3, 6}
+	maxNumSwap(nums)
 }
 
 /*
@@ -216,4 +219,29 @@ func searchXuanZhuanNums(nums []int, target int) int {
 	} else {
 		return -1
 	}
+}
+
+func maxNumSwap(nums []int) []int {
+	lastIndex := make(map[int]int)
+	for i := 0; i < len(nums); i++ {
+		lastIndex[nums[i]] = i
+	}
+
+	for i := 0; i < len(nums); i++ {
+		for d := 9; d > nums[i]; d-- {
+			_, ok := lastIndex[d]
+			if ok && lastIndex[d] > i {
+				swap(nums, i, lastIndex[d])
+			}
+		}
+	}
+
+	fmt.Printf("nums %v", nums)
+	return nums
+}
+
+func swap(nums []int, index int, d int) {
+	temp := nums[index]
+	nums[index] = nums[d]
+	nums[d] = temp
 }
