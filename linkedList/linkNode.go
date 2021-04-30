@@ -477,9 +477,9 @@ func middleNode(head *Node) *Node {
 
 复杂度分析
 
-时间复杂度： O(n)O(n) 。总共有 nn 个节点，我们每个遍历一次。
+时间复杂度： O(n) 。总共有 nn个节点，我们每个遍历一次。
 
-空间复杂度： O(1)O(1) 。我们只需要 4 个指针。
+空间复杂度： O(1)。我们只需要 4 个指针。
 */
 
 func oddEvenList(head *Node) *Node {

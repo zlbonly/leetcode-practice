@@ -23,6 +23,12 @@ func main() {
 
 	fmt.Printf("柱状图中最大矩形面积，单调栈解法：%v", ret)
 
+	//nums := []int{9, 8, 7, 3, 4, 2, 1}
+	nums := []int{3, 3, 1}
+	rets := byteDanceStack(nums)
+
+	fmt.Printf("rets %v", rets)
+
 }
 
 /**
@@ -337,4 +343,42 @@ func largestRectangleAreaStack(height []int) int {
 	}
 
 	return res
+}
+
+/*
+	前几天被问到一道字节的面试题：
+找到数组中, 比左边所有数字都小, 比右边所有数字都大的 数字
+
+先从左到右遍历，求一个leftMin数组，记录nums[i]左边的最小值；
+再从右到左遍历求一个rightMax数组，记录nums[i]右边的最大值。
+然后从左到右遍历每个元素，如果某元素满足leftMin[i]>nums[i]>rightMax[i]，则求得该数
+
+示例1：
+	input: 9,8,7,3,4,2,1
+	output: 9,8,7,2,1
+
+	input: 3,3,1
+	output: 1
+
+*/
+func byteDanceStack(nums []int) []int {
+	length := len(nums)
+	var stack []int
+	var ret []int
+	for i := 0; i < length; i++ {
+
+		if len(stack) > 0 && nums[i] >= stack[len(stack)-1] {
+			stack = stack[:len(stack)-1]
+		} else {
+			for len(stack) > 0 && nums[i] <= stack[len(stack)-1] {
+				ret = append(ret, stack[len(stack)-1])
+				stack = stack[:len(stack)-1]
+			}
+			stack = append(stack, nums[i])
+			if i == length-1 && len(stack) > 0 && nums[i] <= stack[len(stack)-1] {
+				ret = append(ret, stack[len(stack)-1])
+			}
+		}
+	}
+	return ret
 }
