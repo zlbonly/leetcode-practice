@@ -245,3 +245,23 @@ func swap(nums []int, index int, d int) {
 	nums[index] = nums[d]
 	nums[d] = temp
 }
+
+/*
+1、递归乘法。 写一个递归函数，不使用 * 运算符， 实现两个正整数的相乘。可以使用加号、减号、位移，但要吝啬一些。
+示例1:
+	输入：A = 1, B = 10
+	输出：10
+
+解题思路：
+	首先，求得A和B的最小值和最大值;
+然后，可以对其中的最小值当做乘数（为什么选最小值，因为选最小值当乘数，可以算的少），将其拆分成2的幂的和
+*/
+func multiply(A int, B int) int {
+	if A == 0 || B == 0 {
+		return 0
+	}
+	if A < B {
+		return B + multiply(A-1, B)
+	}
+	return A + multiply(A, B-1)
+}
