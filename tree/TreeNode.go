@@ -26,6 +26,14 @@ func (node *Node) setValue(val int) {
 	node.Value = val
 }
 
+func main() {
+	grid := [][]int{{1, 1, 0, 0, 0}, {1, 1, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 1, 1}}
+
+	a := numIslands(grid)
+
+	fmt.Printf("grid num =%v", a)
+}
+
 /*
 	前序遍历 根-左-右
 */
@@ -225,4 +233,311 @@ func max(a, b int) int {
 		return a
 	}
 	return b
+}
+
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
+}
+
+/**
+题目描述：
+给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+示例：
+二叉树：[3,9,20,null,null,15,7],
+   3
+   / \
+  9  20
+    /  \
+   15   7
+返回其层序遍历结果：
+
+[
+  [3],
+  [9,20],
+  [15,7]
+
+解题思路：
+显然这道题是广度优先遍历的变种，只需要在广度优先遍历的过程中，
+把每一层的节点都添加到同一个数组中即可，问题的关键在于遍历同一层节点前，
+必须事先算出同一层的节点个数有多少(即队列已有元素个数)，因为 BFS 用的是队列来实现的
+
+*/
+
+func levelOrder(root *TreeNode) [][]int {
+	res := [][]int{}
+	if root == nil {
+		return res
+	}
+	queue := []*TreeNode{root}
+	for level := 0; 0 < len(queue); level++ {
+		res = append(res, []int{})
+		next := []*TreeNode{}
+		for j := 0; j < len(queue); j++ {
+			node := queue[j]
+			res[level] = append(res[level], node.Val)
+			if node.Left != nil {
+				next = append(next, node.Left)
+			}
+			if node.Right != nil {
+				next = append(next, node.Right)
+			}
+		}
+		queue = next
+	}
+	return res
+}
+
+//二叉树遍历例题总结：
+
+/**
+	1、DFS
+	DFS  全称Depth First Search 中文名为深度优先搜索。是一种以深度方向搜索某种数据结构的方法，常用栈来辅助DFS算法。深度优先搜索
+	大多要以递归方式实现，所以要考虑递归爆栈的可能性。
+
+	void traverse(TreeNode root) {
+    // 判断 base case
+    if (root == null) {
+        return;
+    }
+    // 访问两个相邻结点：左子结点、右子结点
+    traverse(root.left);
+    traverse(root.right);
+}
+
+1、第一个要素是访问相邻结点。二叉树的相邻结点非常简单，只有左子结点和右子结点两个。二叉树本身就是一个递归定义的结构：
+一棵二叉树，它的左子树和右子树也是一棵二叉树。那么我们的 DFS 遍历只需要递归调用左子树和右子树即可。
+
+2、第二个要素是 判断 base case。一般来说，二叉树遍历的 base case 是 root == null。
+这样一个条件判断其实有两个含义：一方面，这表示 root 指向的子树为空，不需要再往下遍历了。另一方面，
+在 root == null 的时候及时返回，可以让后面的 root.left 和 root.right 操作不会出现空指针异常。
+
+
+	2、BFS
+	BFS 全称 Breadth First Search 中文名为广度优先搜索。是一种以宽度方向搜索某种数据结构的方法 常用队列辅助BFS算法。
+
+*/
+
+/**
+ 3、1 网格类问题的DFS遍历方法：
+1、网格问题的基本概念
+我们首先明确一下岛屿问题中的网格结构是如何定义的，以方便我们后面的讨论。
+
+网格问题是由  个小方格组成一个网格，每个小方格与其上下左右四个方格认为是相邻的，要在这样的网格上进行某种搜索。
+
+岛屿问题是一类典型的网格问题。每个格子中的数字可能是 0 或者 1。我们把数字为 0 的格子看成海洋格子，数字为 1 的格子看成陆地格子，
+这样相邻的陆地格子就连接成一个岛屿。
+
+2、网格类 DFS 的基本结构
+网格结构要比二叉树结构稍微复杂一些，它其实是一种简化版的图结构。要写好网格上的 DFS 遍历，我们首先要理解二叉树上的 DFS 遍历方法，再类比写出网格结构上的 DFS 遍历。
+我们写的二叉树 DFS 遍历一般是这样的：
+ 2.1 void traverse(TreeNode root) {
+    // 判断 base case
+    if (root == null) {
+        return;
+    }
+    // 访问两个相邻结点：左子结点、右子结点
+    traverse(root.left);
+    traverse(root.right);
+}
+
+可以看到，二叉树的 DFS 有两个要素：「访问相邻结点」和「判断 base case」。
+
+ 1)第一个要素是访问相邻结点。二叉树的相邻结点非常简单，只有左子结点和右子结点两个。二叉树本身就是一个递归定义的结构：一棵二叉树，它的左子树和右子树也是一棵二叉树。那么我们的 DFS 遍历只需要递归调用左子树和右子树即可。
+
+2) 第二个要素是 判断 base case。一般来说，二叉树遍历的 base case 是 root == null。这样一个条件判断其实有两个含义：一方面，这表示 root 指向的子树为空，不需要再往下遍历了。另一方面，在 root == null 的时候及时返回，可以让后面的 root.left 和 root.right 操作不会出现空指针异常。
+
+对于网格上的 DFS，我们完全可以参考二叉树的 DFS，写出网格 DFS 的两个要素：
+
+首先，网格结构中的格子有多少相邻结点？答案是上下左右四个。对于格子 (r, c) 来说（r 和 c 分别代表行坐标和列坐标），四个相邻的格子分别是 (r-1, c)、(r+1, c)、(r, c-1)、(r, c+1)。换句话说，网格结构是「四叉」的。
+
+其次，网格 DFS 中的 base case 是什么？从二叉树的 base case 对应过来，应该是网格中不需要继续遍历、grid[r][c] 会出现数组下标越界异常的格子，也就是那些超出网格范围的格子。
+
+3、这样，我们得到了网格 DFS 遍历的框架代码：
+void dfs(int[][] grid, int r, int c) {
+    // 判断 base case
+    // 如果坐标 (r, c) 超出了网格范围，直接返回
+    if (!inArea(grid, r, c)) {
+        return;
+    }
+    // 访问上、下、左、右四个相邻结点
+    dfs(grid, r - 1, c);
+    dfs(grid, r + 1, c);
+    dfs(grid, r, c - 1);
+    dfs(grid, r, c + 1);
+}
+
+// 判断坐标 (r, c) 是否在网格中
+boolean inArea(int[][] grid, int r, int c) {
+    return 0 <= r && r < grid.length
+         && 0 <= c && c < grid[0].length;
+}
+
+4、如何避免重复遍历
+网格结构的 DFS 与二叉树的 DFS 最大的不同之处在于，遍历中可能遇到遍历过的结点。这是因为，网格结构本质上是一个「图」，我们可以把每个格子看成图中的结点，每个结点有向上下左右的四条边。在图中遍历时，自然可能遇到重复遍历结点。
+
+这时候，DFS 可能会不停地「兜圈子」，永远停不下来，如下图所示
+https://mmbiz.qpic.cn/mmbiz_gif/TKAD4axFcib8CSJjOnbGUamCj2B7OiclOvhNwXiaoJdXnDNUGpmtqqlHIbPnpejyAVqnQqODmYMIxovmlLcn0xEicA/640?wx_fmt=gif&tp=webp&wxfrom=5&wx_lazy=1
+如何避免这样的重复遍历呢？答案是标记已经遍历过的格子。以岛屿问题为例，我们需要在所有值为 1 的陆地格子上做 DFS 遍历。每走过一个陆地格子，就把格子的值改为 2，这样当我们遇到 2 的时候，就知道这是遍历过的格子了。也就是说，每个格子可能取三个值：
+
+0 —— 海洋格子
+1 —— 陆地格子（未遍历过）
+2 —— 陆地格子（已遍历过）
+我们在框架代码中加入避免重复遍历的语句：
+void dfs(int[][] grid, int r, int c) {
+    // 判断 base case
+    if (!inArea(grid, r, c)) {
+        return;
+    }
+    // 如果这个格子不是岛屿，直接返回
+    if (grid[r][c] != 1) {
+        return;
+    }
+    grid[r][c] = 2; // 将格子标记为「已遍历过」
+
+    // 访问上、下、左、右四个相邻结点
+    dfs(grid, r - 1, c);
+    dfs(grid, r + 1, c);
+    dfs(grid, r, c - 1);
+    dfs(grid, r, c + 1);
+}
+
+// 判断坐标 (r, c) 是否在网格中
+boolean inArea(int[][] grid, int r, int c) {
+    return 0 <= r && r < grid.length
+         && 0 <= c && c < grid[0].length;
+}
+*/
+
+/**
+3.1 网格DFS例题1
+	岛屿的最大面积:
+	给定一个包含了一些 0 和 1 的非空二维数组 grid，一个岛屿是一组相邻的 1（代表陆地），这里的「相邻」要求两个 1 必须在水平或者竖直方向上相邻。
+	你可以假设 grid 的四个边缘都被 0（代表海洋）包围着。
+	找到给定的二维数组中最大的岛屿面积。如果没有岛屿，则返回面积为 0 。
+
+题目连接：https://leetcode-cn.com/problems/max-area-of-island/
+maxAreaOfIsland（）
+*/
+
+func maxAreaOfIsland(grid [][]int) int {
+	res := 0
+	for r := 0; r < len(grid); r++ {
+		for c := 0; c < len(grid[0]); c++ {
+			if grid[r][c] == 1 {
+				a := area(grid, r, c)
+				res = Max(res, a)
+			}
+		}
+	}
+	return res
+}
+
+/**
+463. 岛屿的周长
+	给定一个 row x col 的二维网格地图 grid ，其中：grid[i][j] = 1 表示陆地， grid[i][j] = 0 表示水域。
+
+网格中的格子 水平和垂直 方向相连（对角线方向不相连）。整个网格被水完全包围，但其中恰好有一个岛屿（或者说，一个或多个表示陆地的格子相连组成的岛屿）。
+
+岛屿中没有“湖”（“湖” 指水域在岛屿内部且不和岛屿周围的水相连）。格子是边长为 1 的正方形。网格为长方形，且宽度和高度均不超过 100 。计算这个岛屿的周长。
+
+题目地址：
+https://leetcode-cn.com/problems/island-perimeter/
+
+*/
+func islandPerimeter(grid [][]int) int {
+	for r := 0; r < len(grid); r++ {
+		for c := 0; c < len(grid[0]); c++ {
+			if grid[r][c] == 1 {
+				// 题目限制只有一个岛屿，计算一个即可
+				return dfsPerimeter(grid, r, c)
+			}
+		}
+	}
+	return 0
+}
+
+func dfsPerimeter(grid [][]int, r int, c int) int {
+	// 函数因为坐标[r,c] 超出网格范围，返回对应一条黄色的边
+	if !inArea(grid, r, c) {
+		return 1
+	}
+	// 函数因为 当前格子是海洋格子 返回 对应一条蓝色的边
+	if grid[r][c] == 0 {
+		return 1
+	}
+	// 函数因为「当前格子是已遍历的陆地格子」返回，和周长没关系
+	if grid[r][c] != 1 {
+		return 0
+	}
+	grid[r][c] = 2
+
+	return dfsPerimeter(grid, r-1, c) + dfsPerimeter(grid, r+1, c) + dfsPerimeter(grid, r, c-1) + dfsPerimeter(grid, r, c+1)
+}
+
+/**
+
+	岛屿数量：
+	给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+此外，你可以假设该网格的四条边均被水包围。
+题目连接：https://leetcode-cn.com/problems/number-of-islands/
+*/
+func numIslands(grid [][]int) int {
+	islandNum := 0
+	for r := 0; r < len(grid); r++ {
+		for c := 0; c < len(grid[0]); c++ {
+			if grid[r][c] == 1 {
+				dfsIslandNum(grid, r, c)
+				islandNum++
+			}
+		}
+	}
+	return islandNum
+}
+
+func dfsIslandNum(grid [][]int, r int, c int) {
+	// 1、判断是否在网格范围内
+	if !inArea(grid, r, c) {
+		return
+	}
+	// 2、判断是否重复遍历
+	if grid[r][c] != 1 {
+		return
+	}
+	// 3、标记已遍历
+	grid[r][c] = 2
+	// 4、遍历上下左右网格
+	dfsIslandNum(grid, r-1, c)
+	dfsIslandNum(grid, r+1, c)
+	dfsIslandNum(grid, r, c-1)
+	dfsIslandNum(grid, r, c+1)
+}
+
+// 获取最大值
+func Max(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func area(grid [][]int, r int, c int) int {
+	// 1、判断是否在网格范围内
+	if !inArea(grid, r, c) {
+		return 0
+	}
+	// 2、判断是否重复遍历
+	if grid[r][c] != 1 {
+		return 0
+	}
+	// 3、标记已遍历
+	grid[r][c] = 2
+	// 4、遍历上下左右网格
+	return 1 + area(grid, r-1, c) + area(grid, r+1, c) + area(grid, r, c-1) + area(grid, r, c+1)
+}
+
+func inArea(grid [][]int, r int, c int) bool {
+	return 0 <= r && r < len(grid) && 0 <= c && c < len(grid[0])
 }
