@@ -37,6 +37,17 @@ func main() {
 }
 
 /*
+两数子和（I）
+1、题目描述：
+	 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。
+	你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+	你可以按任意顺序返回答案。
+
+	示例1：
+			输入：nums = [2,7,11,15], target = 9
+			输出：[0,1]
+			解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+
 创建map映射，用于存放目标数组的相关信息；
 遍历目标数组，并获取目标值（target）与数组元素（nums[i]）的差值；
 将差值当作map的key，目标数组的角标当作value；
@@ -44,7 +55,7 @@ func main() {
 如果map中不包含，放入map中。
 */
 
-func twoNum(nums []int, target int) []int {
+func twoNum1(nums []int, target int) []int {
 	m := make(map[int]int)
 	for i, v := range nums {
 		if k, ok := m[target-v]; ok {
