@@ -93,6 +93,7 @@ func (node *Node) layer() int {
 }
 
 /**
+路径总和 I
  5、题目描述：
 给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。
 说明: 叶子节点是指没有子节点的节点。
@@ -101,6 +102,9 @@ func (node *Node) layer() int {
 最直接的方法就是利用递归，遍历整棵树：如果当前节点不是叶子，对它的所有孩子节点，
 递归调用 hasPathSum 函数，其中 sum 值减去当前节点的权值；
 如果当前节点是叶子，检查 sum 值是否为 0，也就是是否找到了给定的目标和。
+
+题目连接：https://leetcode-cn.com/problems/path-sum/submissions/
+
 */
 func hasPathSum(root *Node, sum int) bool {
 	if root == nil {
@@ -111,6 +115,81 @@ func hasPathSum(root *Node, sum int) bool {
 		return sum == 0
 	}
 	return hasPathSum(root.Left, sum) || hasPathSum(root.Right, sum)
+}
+
+/**
+路径总和II
+给你二叉树的根节点 root 和一个整数目标和 targetSum ，找出所有 从根节点到叶子节点 路径总和等于给定目标和的路径。
+
+叶子节点 是指没有子节点的节点
+
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+输出：[[5,4,11,2],[5,8,4,5]]
+
+参考解题思路：https://mp.weixin.qq.com/s/g5uvxi1lyxmWC4LtP0Bdlw
+
+回溯思想
+*/
+
+func pathSum(root *TreeNode, targetSum int) [][]int {
+	res := make([][]int, 0)
+	var path []int
+	dfsPathSumII(root, targetSum, path, &res)
+	return res
+}
+
+func dfsPathSumII(root *TreeNode, targetSum int, path []int, res *[][]int) {
+	if root == nil {
+		return
+	}
+	path = append(path, root.Val)
+	if root.Left == nil && root.Right == nil {
+		if targetSum == root.Val {
+			temp := make([]int, len(path))
+			copy(temp, path)
+			*res = append(*res, temp)
+		}
+	}
+
+	targetSum = targetSum - root.Val
+	dfsPathSumII(root.Left, targetSum, path, res)
+	dfsPathSumII(root.Right, targetSum, path, res)
+	path = path[:len(path)-1]
+}
+
+/**
+
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+示例 1：
+
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+
+解题连接：https://mp.weixin.qq.com/s/g5uvxi1lyxmWC4LtP0Bdlw
+*/
+func subsets(nums []int) [][]int {
+	res := make([][]int, 0)
+	current := []int{}
+
+	dfsSubsets(nums, 0, current, &res)
+	return res
+}
+
+func dfsSubsets(nums []int, k int, current []int, res *[][]int) {
+	if k == len(nums) {
+		temp := make([]int, len(current))
+		copy(temp, current)
+		*res = append(*res, current)
+		return
+	}
+	// 不选择第k个元素
+	dfsSubsets(nums, k+1, current, res)
+	// 选择第k个元素
+	current = append(current, nums[k])
+	dfsSubsets(nums, k+1, current, res)
+	current = current[:len(current)-1]
 }
 
 /**
