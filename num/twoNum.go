@@ -412,3 +412,41 @@ func calculate(s string) int {
 	}
 	return ans
 }
+
+/**
+	3、旋转数组
+	题目描述：
+给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。
+示例：
+		输入: nums = [1,2,3,4,5,6,7], k = 3
+输出: [5,6,7,1,2,3,4]
+解释:
+向右旋转 1 步: [7,1,2,3,4,5,6]
+向右旋转 2 步: [6,7,1,2,3,4,5]
+向右旋转 3 步: [5,6,7,1,2,3,4]
+
+	解题思路：三次反转（reverse）操作的过程如下图所示：
+
+	原数组 ： 1，2，3，4，5，6，7
+ 	reverse(0,n)  7,6,5,4,3,2,1
+	reverse(0,k) 5,6,7,4,3,2,1
+	reverse(k,n) 5,6,7,1,2,3,4
+
+空间复杂度 O（1）
+
+*/
+func rotate(nums []int, k int) {
+	n := len(nums)
+	k %= n
+	reverse(nums, 0, n)
+	reverse(nums, 0, k)
+	reverse(nums, k, n)
+}
+
+func reverse(nums []int, begin int, end int) {
+	for i, j := begin, end-1; i < j; i, j = i+1, j-1 {
+		temp := nums[i]
+		nums[i] = nums[j]
+		nums[j] = temp
+	}
+}
