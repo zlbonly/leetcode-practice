@@ -218,11 +218,15 @@ func (this *List) partitionNode(partition Object) *Node {
 }
 
 /**
-合并k个有序链表
+22 题目描述 合并k个有序链表
 解题思路
 将链表拆分为lists[:len(lists)/2]和lists[len(lists)/2:]两部分，
 分别使用mergeKLists进行递归直至lists中只有一个链表时返回，
 然后返回的结果两两合并，最终合并为一个链表。流程大致如下所示
+
+方案：
+1、分治
+2、优先队列 （使用priority_queue队列库） 先把把所有list的节点入队列，然后 使用尾插法。
 */
 func mergeKLists(lists []*Node) *Node {
 	n := len(lists)
