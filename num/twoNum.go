@@ -450,3 +450,33 @@ func reverse(nums []int, begin int, end int) {
 		nums[j] = temp
 	}
 }
+
+/**
+4、快速幂
+题目描述：
+	实现 pow(x, n) ，即计算 x 的 n 次幂函数（即，xn）。 （题目连接：https://leetcode-cn.com/problems/powx-n/）
+示例；
+输入：x = 2.00000, n = 10
+输出：1024.00000
+
+解题思路： 参考https://leetcode-cn.com/problems/powx-n/solution/powx-n-by-leetcode-solution/
+
+*/
+func myPow(x float64, n int) float64 {
+
+	if n >= 0 {
+		return quickMul(x, n)
+	}
+	return 1.0 / quickMul(x, -n)
+}
+
+func quickMul(x float64, n int) float64 {
+	if n == 0 {
+		return 1
+	}
+	y := quickMul(x, n/2)
+	if n%2 == 0 {
+		return y * y
+	}
+	return y * y * x
+}
