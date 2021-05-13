@@ -33,11 +33,41 @@ func dynamic() {
 	l := 20
 	c := make([]int, 0, l) // 动态分配不定空间 逃逸
 }
+
+type UserData struct {
+	Name string
+}
+
+func GetUserInfo(userInfo UserData) *UserData {
+	return &userInfo
+}
+
+/***
+
+优化建议
+
+func main() {
+	var info UserData
+	info.Name = "WilburXu"
+	_ = GetUserInfo(&info)
+}
+
+func GetUserInfo(userInfo *UserData) *UserData {
+	return userInfo
+}
+
+
+*/
+
 func main() {
 	//StudentRegister("zlb",19) // 返回指针变量逃逸
 	//F()
 	//Slice()
 	dynamic()
+	var info UserData
+	info.Name = "WilburXu"
+	_ = GetUserInfo(info)
+
 }
 
 func Fibonacci() func() int {
@@ -89,9 +119,5 @@ Fibonacci()函数中原本属于局部变量的a和b由于闭包的引用，不�
 
 提问：函数传递指针真的比传值效率高吗？
 我们知道传递指针可以减少底层值的拷贝，可以提高效率，但是如果拷贝的数据量小，由于指针传递会产生逃逸，可能会使用堆，也可能会增加GC的负担，所以传递指针不一定是高效的。
-
-
-
-
 
 */
