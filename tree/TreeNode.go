@@ -368,6 +368,54 @@ func levelOrder(root *TreeNode) [][]int {
 	return res
 }
 
+/**
+	二叉树的左视图和右视图
+解题思想：
+	1、层次遍历二叉树，
+		左视图 取二叉树 每层遍历的第一个元素。
+		右视图，取二叉树，每层遍历的第二个元素。
+	2、使用队列来遍历进行二叉树的层次队列。先把跟节点添加到队列中，然后循环把每层的左右节点，分别加入队列中。
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+*/
+func rightSideView(root *TreeNode) []int {
+	res := make([]int, 0)
+	if root == nil {
+		return res
+	}
+
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	for len(queue) > 0 {
+		length := len(queue)
+		for i := 0; i < length; i++ {
+			first := queue[0]
+
+			if first.Left != nil {
+				queue = append(queue, first.Left)
+			}
+
+			if first.Right != nil {
+				queue = append(queue, first.Right)
+			}
+
+			/*if i == 0 { // 左视图
+				res = append(res,first.Val)
+			}*/
+
+			if i == length-1 { // 右视图
+				res = append(res, first.Val)
+			}
+			queue = queue[1:]
+		}
+	}
+	return res
+}
+
 //二叉树遍历例题总结：
 
 /**
