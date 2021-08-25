@@ -5,96 +5,320 @@ import (
 	"math"
 )
 
-type Node struct {
-	Value       int
-	Left, Right *Node
-}
-
-func createNode(value int) *Node {
-	return &Node{Value: value}
-}
-
-func (node *Node) Print() {
-	fmt.Print(node.Value, " ")
-}
-
-func (node *Node) setValue(val int) {
-	if node == nil {
-		fmt.Println("setting value to nil.node ignored.")
-		return
-	}
-	node.Value = val
-}
-
-func main() {
-	grid := [][]int{{1, 1, 0, 0, 0}, {1, 1, 0, 0, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 1, 1}}
-
-	a := numIslands(grid)
-
-	fmt.Printf("grid num =%v", a)
+type TreeNode struct {
+	Val   int
+	Left  *TreeNode
+	Right *TreeNode
 }
 
 /*
-	前序遍历 根-左-右
+	1、前序遍历 根-左-右
 */
-
-func (node *Node) preOrder() {
-	if node == nil {
+func preOrder(root *TreeNode) {
+	if root == nil {
 		return
 	}
-	node.Print()
-	node.Left.preOrder()
-	node.Right.preOrder()
+	fmt.Printf("%d", root.Val)
+	preOrder(root.Left)
+	preOrder(root.Right)
 }
 
 /**
-左=》根-》右
+2、左=》根-》右
 */
-func (node *Node) middleOrder() {
-	if node == nil {
+func middleOrder(root *TreeNode) {
+	if root == nil {
 		return
 	}
-	node.Left.middleOrder()
-	node.Print()
-	node.Right.middleOrder()
+	middleOrder(root.Left)
+	fmt.Printf("%d", root.Val)
+	middleOrder(root.Right)
 }
 
 /**
 后序遍历
-左 -》右=》 根
+3、左 -》右=》 根
 */
-func (node *Node) postOrder() {
-	if node == nil {
+func postOrder(root *TreeNode) {
+	if root == nil {
 		return
 	}
-	node.Left.postOrder()
-	node.Right.postOrder()
-	node.Print()
+	middleOrder(root.Left)
+	middleOrder(root.Right)
+	fmt.Printf("%d", root.Val)
 }
 
 /**
-树 的深度
-//层数(递归实现)
-//对任意一个子树的根节点来说，它的深度=左右子树深度的最大值+1
+4、树的最大深度
+解题思路：对任意一个子树的根节点来说，它的深度=左右子树深度的最大值+1。层数(递归实现)
 */
-func (node *Node) layer() int {
-	if node == nil {
+
+func maxDepth(root *TreeNode) int {
+	if root == nil {
 		return 0
 	}
-	leftLayer := node.Left.layer()
-	rightLayer := node.Right.layer()
-
-	if leftLayer > rightLayer {
-		return leftLayer + 1
+	leftDepth := maxDepth(root.Left)
+	rightDepth := maxDepth(root.Right)
+	if leftDepth > rightDepth {
+		return leftDepth + 1
 	} else {
-		return rightLayer + 1
+		return rightDepth + 1
 	}
-
 }
 
 /**
-路径总和 I
- 5、题目描述：
+5、判断两个二叉树是否相同
+解题思路：递归
+	两个二叉树相同，当且仅当两个二叉树的结构完全相同，且所有对应节点的值相同。因此，可以通过搜索的方式判断两个二叉树是否相同。
+	如果两个二叉树都为空，则两个二叉树相同。如果两个二叉树中有且只有一个为空，则两个二叉树一定不相同。
+	如果两个二叉树都不为空，那么首先判断它们的根节点的值是否相同，若不相同则两个二叉树一定不同，若相同，
+	再分别判断两个二叉树的左子树是否相同以及右子树是否相同。这是一个递归的过程，因此可以使用深度优先搜索，递归地判断两个二叉树是否相同。
+*/
+func isSameTree(p *TreeNode, q *TreeNode) bool {
+	if p == nil && q == nil {
+		return true
+	}
+	if p == nil || q == nil {
+		return false
+	}
+	if p.Val != q.Val {
+		return false
+	}
+	return isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)
+}
+
+/**
+ 6、重建二叉树
+1.题目概述
+输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
+
+2.解题思路
+前序排列顺序为 根-左-右，中序排列为左-根-右。
+那么如题根为1。
+则根据中序遍历序列则可以得到左子树{4,7,2,}和右子树{5,3,8,6}。
+又根据前序遍历则可以得到左子树的根为2，右子树的根为3。
+重复3,4步。
+直到左右子树皆为空时即可重建二叉树如图
+https://upload-images.jianshu.io/upload_images/1441907-d31e4c6898f6c3ef.png?imageMogr2/auto-orient/strip|imageView2/2/w/366/format/webp
+*/
+func buildTree(preOrder []int, inOrder []int) *TreeNode {
+	if len(preOrder) == 0 || len(inOrder) == 0 {
+		return nil
+	}
+	root := &TreeNode{
+		Val:   preOrder[0],
+		Left:  nil,
+		Right: nil,
+	}
+	i := 0
+	for ; i < len(inOrder); i++ {
+		if inOrder[i] == preOrder[0] {
+			break
+		}
+	}
+	root.Left = buildTree(preOrder[1:len(inOrder[:i])+1], inOrder[:i])
+	root.Right = buildTree(preOrder[len(inOrder[:i])+1:], inOrder[i+1:])\
+	return root
+}
+
+/*
+
+7、题目描述：二叉树的层次遍历
+二叉树：[3,9,20,null,null,15,7],
+返回其层序遍历结果：
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+解题思路：使用队列先进先出的特性，对二叉树进行层次遍历。
+显然这道题是广度优先遍历的变种，只需要在广度优先遍历的过程中，
+把每一层的节点都添加到同一个数组中即可，问题的关键在于遍历同一层节点前，
+必须事先算出同一层的节点个数有多少(即队列已有元素个数)，因为 BFS 用的是队列来实现的
+*/
+
+func levelOrder(root *TreeNode) [][]int {
+	res := make([][]int,0)
+	if root == nil {
+		return res
+	}
+	queue := make([]*TreeNode,0)
+	queue = append(queue,root)
+	for len(queue) > 0 {
+		temp := make([]int,0)
+		length := len(queue)
+		for i := 0;i< length ;i++{
+			first := queue[0]
+			temp = append(temp,first.Val)
+			if first.Left != nil {
+				queue = append(queue,first.Left)
+			}
+			if first.Right != nil {
+				queue = append(queue,first.Right)
+			}
+			queue = queue[1:]
+		}
+		res = append(res,temp)
+	}
+	return res
+}
+
+/**
+8、题目描述 【二叉树的左视图和右视图】
+解题思想：
+	1、层次遍历二叉树，
+		左视图 取二叉树 每层遍历的第一个元素。
+		右视图，取二叉树，每层遍历的第二个元素。
+	2、使用队列来遍历进行二叉树的层次队列。先把跟节点添加到队列中，然后循环把每层的左右节点，分别加入队列中。
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+*/
+func rightSideView(root *TreeNode) []int {
+	res := make([]int, 0)
+	if root == nil {
+		return res
+	}
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	for len(queue) > 0 {
+		length := len(queue)
+		for i := 0; i < length; i++ {
+			first := queue[0]
+			if first.Left != nil {
+				queue = append(queue, first.Left)
+			}
+			if first.Right != nil {
+				queue = append(queue, first.Right)
+			}
+
+			/*if i == 0 { // 左视图
+				res = append(res,first.Val)
+			}*/
+			if i == length-1 { // 右视图
+				res = append(res, first.Val)
+			}
+			queue = queue[1:]
+		}
+	}
+	return res
+}
+
+
+/**
+9、题目描述	二叉树的锯齿形层序遍历
+给定一个二叉树，返回其节点值的锯齿形层序遍历。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
+题目描述：https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
+  解题思路： 二叉树的层次遍历BFS，对奇数层进行翻转
+ */
+func zigzagLevelOrder(root *TreeNode) [][]int {
+	if root == nil {
+		return nil
+	}
+
+	ans := make([][]int ,0)
+	queue := make([]*TreeNode,0)
+	queue = append(queue,root)
+	level := 0;
+	for len(queue) >0 {
+		res := make([]int,0)
+		length := len(queue)
+		for i := 0;i< length;i++{
+			first := queue[0]
+			res = append(res,first.Val)
+			if first.Left != nil {
+				queue = append(queue,first.Left)
+			}
+			if first.Right != nil {
+				queue = append(queue,first.Right)
+			}
+			queue = queue[1:]
+		}
+		// 本质上和层序遍历一样，我们只需要把奇数层的元素翻转即可
+		if level%2 == 1{
+			for i ,n := 0,len(res);i<n/2;i++ {
+				res[i],res[n-1-i]  = res[n-1-i],res[i]
+			}
+		}
+		ans = append(ans,res)
+		level++
+	}
+	return ans
+}
+/**
+10、
+	1、题目描述： 翻转二叉树
+	2、解题方案： 使用递归
+	反转一颗空树结果还是一颗空树。对于一颗根为 rr，左子树为 \mbox{right}，
+	右子树为 \mbox{left} 的树来说，它的反转树是一颗根为 rr，
+	左子树为 \mbox{right} 的反转树，右子树为 \mbox{left} 的反转树的树。
+   3、算法分析
+	既然树中的每个节点都只被访问一次，那么时间复杂度就是 O(n)，
+	其中 n 是树中节点的个数。在反转之前，不论怎样我们至少都得访问每个节点至少一次，因此这个问题无法做地比 O(n)更好了。
+*/
+
+func invertTreeNode(root *TreeNode)*TreeNode{
+	if root == nil {
+		return nil
+	}
+	right := invertTreeNode(root.Right)
+	left := invertTreeNode(root.Left)
+	root.Right = right
+	root.Left = left
+	return  root
+}
+
+/**
+	11、题目描述：【二叉树的最近公共祖先】
+	给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出：3
+解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
+解题思路：
+直接拿本身这个函数进行递归，本身这个函数的含义是在root这棵树找到p和q的最近公共祖先
+
+1、若当前节点root == p，则表示q点一定在root的左右子树其中一处，则最近的公共结点肯定是root
+
+2、若当前节点root == q，则表示p点一定在root的左右子树其中一处，则最近的公共结点肯定是root
+
+3、若1和2情况都不是，则p和q的最近公共祖先要么在root的左子树，要么在root的右子树，则直接递归到root.left和root.right进行搜索，若递归完 后，左子树返回null表示没找到，那答案肯定是在右子树，同理，右子树返回null表示没找到，那答案肯定是在左子树
+
+4、若3情况中左右子树都找不到p和q的最近公共祖先，则表示p点和q点分别在不同的左右子树，则root就是他们的最近公共祖先
+
+
+题目连接：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
+
+解题思路：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/solution/er-cha-shu-de-zui-jin-gong-gong-zu-xian-by-leetc-2/
+*/
+
+func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	if root == nil {
+		return root
+	}
+
+	if root.Val == p.Val || root.Val == q.Val {
+		return root
+	}
+	left := lowestCommonAncestor(root.Left, p, q)
+	right := lowestCommonAncestor(root.Right, p, q)
+	if left != nil && right != nil {
+		return root
+	}
+	if left == nil {
+		return right
+	}
+	return left
+}
+
+
+/**
+ 12、题目描述：路径总和 I
 给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。
 说明: 叶子节点是指没有子节点的节点。
 
@@ -106,11 +330,11 @@ func (node *Node) layer() int {
 题目连接：https://leetcode-cn.com/problems/path-sum/submissions/
 
 */
-func hasPathSum(root *Node, sum int) bool {
+func hasPathSum(root *TreeNode, sum int) bool {
 	if root == nil {
 		return false
 	}
-	sum -= root.Value
+	sum -= root.Val
 	if root.Left == nil && root.Right == nil {
 		return sum == 0
 	}
@@ -118,7 +342,7 @@ func hasPathSum(root *Node, sum int) bool {
 }
 
 /**
-路径总和II
+13、路径总和II
 给你二叉树的根节点 root 和一个整数目标和 targetSum ，找出所有 从根节点到叶子节点 路径总和等于给定目标和的路径。
 
 叶子节点 是指没有子节点的节点
@@ -128,7 +352,17 @@ func hasPathSum(root *Node, sum int) bool {
 
 参考解题思路：https://mp.weixin.qq.com/s/g5uvxi1lyxmWC4LtP0Bdlw
 
+而在 Path Sum II 中，为了得到路径，我们需要从遍历的视角来看二叉树问题。
+
+为了最终输出所有可能的路径，我们需要在遍历时记录当前路径，当发现路径满足条件时，就将路径保存下来。
+
+路径遍历的顺序实际上就是 DFS 的顺序。当 DFS 进入一个结点时，路径中就增加一个结点；
+当 DFS 从一个结点退出时，路径中就减少一个结点。下面的 GIF 动图展示了这个过程
+
 回溯思想
+回溯法采用试错的思想，当它通过尝试发现现有的分步答案不能得到有效的正确的解答的时候，
+它将取消上一步甚至是上几步的计算，再通过其它的可能的分步解答再次尝试寻找问题的答案。—— 回溯法 - 维基百科[3]
+
 */
 
 func pathSum(root *TreeNode, targetSum int) [][]int {
@@ -192,28 +426,7 @@ func dfsSubsets(nums []int, k int, current []int, res *[][]int) {
 	current = current[:len(current)-1]
 }
 
-/**
-	1、题目描述： 翻转二叉树
-	2、解题方案： 使用递归
-	反转一颗空树结果还是一颗空树。对于一颗根为 rr，左子树为 \mbox{right}，
-	右子树为 \mbox{left} 的树来说，它的反转树是一颗根为 rr，
-	左子树为 \mbox{right} 的反转树，右子树为 \mbox{left} 的反转树的树。
-   3、算法分析
-	既然树中的每个节点都只被访问一次，那么时间复杂度就是 O(n)，
-	其中 n 是树中节点的个数。在反转之前，不论怎样我们至少都得访问每个节点至少一次，因此这个问题无法做地比 O(n)更好了。
 
-*/
-func invertTreeNode(root *Node) *Node {
-	if root == nil {
-		return nil
-	}
-	right := invertTreeNode(root.Right)
-	left := invertTreeNode(root.Left)
-
-	root.Right = left
-	root.Left = right
-	return root
-}
 
 /**
 124. 二叉树中的最大路径和
@@ -314,107 +527,6 @@ func max(a, b int) int {
 	return b
 }
 
-type TreeNode struct {
-	Val   int
-	Left  *TreeNode
-	Right *TreeNode
-}
-
-/**
-题目描述：
-给你一个二叉树，请你返回其按 层序遍历 得到的节点值。 （即逐层地，从左到右访问所有节点）。
-示例：
-二叉树：[3,9,20,null,null,15,7],
-   3
-   / \
-  9  20
-    /  \
-   15   7
-返回其层序遍历结果：
-
-[
-  [3],
-  [9,20],
-  [15,7]
-
-解题思路：
-显然这道题是广度优先遍历的变种，只需要在广度优先遍历的过程中，
-把每一层的节点都添加到同一个数组中即可，问题的关键在于遍历同一层节点前，
-必须事先算出同一层的节点个数有多少(即队列已有元素个数)，因为 BFS 用的是队列来实现的
-
-*/
-
-func levelOrder(root *TreeNode) [][]int {
-	res := [][]int{}
-	if root == nil {
-		return res
-	}
-	queue := []*TreeNode{root}
-	for level := 0; 0 < len(queue); level++ {
-		res = append(res, []int{})
-		next := []*TreeNode{}
-		for j := 0; j < len(queue); j++ {
-			node := queue[j]
-			res[level] = append(res[level], node.Val)
-			if node.Left != nil {
-				next = append(next, node.Left)
-			}
-			if node.Right != nil {
-				next = append(next, node.Right)
-			}
-		}
-		queue = next
-	}
-	return res
-}
-
-/**
-	二叉树的左视图和右视图
-解题思想：
-	1、层次遍历二叉树，
-		左视图 取二叉树 每层遍历的第一个元素。
-		右视图，取二叉树，每层遍历的第二个元素。
-	2、使用队列来遍历进行二叉树的层次队列。先把跟节点添加到队列中，然后循环把每层的左右节点，分别加入队列中。
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
-*/
-func rightSideView(root *TreeNode) []int {
-	res := make([]int, 0)
-	if root == nil {
-		return res
-	}
-
-	queue := make([]*TreeNode, 0)
-	queue = append(queue, root)
-	for len(queue) > 0 {
-		length := len(queue)
-		for i := 0; i < length; i++ {
-			first := queue[0]
-
-			if first.Left != nil {
-				queue = append(queue, first.Left)
-			}
-
-			if first.Right != nil {
-				queue = append(queue, first.Right)
-			}
-
-			/*if i == 0 { // 左视图
-				res = append(res,first.Val)
-			}*/
-
-			if i == length-1 { // 右视图
-				res = append(res, first.Val)
-			}
-			queue = queue[1:]
-		}
-	}
-	return res
-}
 
 //二叉树遍历例题总结：
 
@@ -669,44 +781,3 @@ func inArea(grid [][]int, r int, c int) bool {
 	return 0 <= r && r < len(grid) && 0 <= c && c < len(grid[0])
 }
 
-/**
-	1、二叉树的最近公共祖先
-	给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
-
-百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
-
-输入：root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
-输出：3
-解释：节点 5 和节点 1 的最近公共祖先是节点 3 。
-
-题目连接：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/
-
-解题思路：https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-tree/solution/er-cha-shu-de-zui-jin-gong-gong-zu-xian-by-leetc-2/
-*/
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
-	if root == nil {
-		return root
-	}
-
-	if root.Val == p.Val || root.Val == q.Val {
-		return root
-	}
-
-	left := lowestCommonAncestor(root.Left, p, q)
-	right := lowestCommonAncestor(root.Right, p, q)
-	if left != nil && right != nil {
-		return root
-	}
-	if left == nil {
-		return right
-	}
-	return left
-}
