@@ -117,7 +117,7 @@ func buildTree(preOrder []int, inOrder []int) *TreeNode {
 		}
 	}
 	root.Left = buildTree(preOrder[1:len(inOrder[:i])+1], inOrder[:i])
-	root.Right = buildTree(preOrder[len(inOrder[:i])+1:], inOrder[i+1:])\
+	root.Right = buildTree(preOrder[len(inOrder[:i])+1:], inOrder[i+1:])
 	return root
 }
 
@@ -138,27 +138,27 @@ func buildTree(preOrder []int, inOrder []int) *TreeNode {
 */
 
 func levelOrder(root *TreeNode) [][]int {
-	res := make([][]int,0)
+	res := make([][]int, 0)
 	if root == nil {
 		return res
 	}
-	queue := make([]*TreeNode,0)
-	queue = append(queue,root)
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
 	for len(queue) > 0 {
-		temp := make([]int,0)
+		temp := make([]int, 0)
 		length := len(queue)
-		for i := 0;i< length ;i++{
+		for i := 0; i < length; i++ {
 			first := queue[0]
-			temp = append(temp,first.Val)
+			temp = append(temp, first.Val)
 			if first.Left != nil {
-				queue = append(queue,first.Left)
+				queue = append(queue, first.Left)
 			}
 			if first.Right != nil {
-				queue = append(queue,first.Right)
+				queue = append(queue, first.Right)
 			}
 			queue = queue[1:]
 		}
-		res = append(res,temp)
+		res = append(res, temp)
 	}
 	return res
 }
@@ -207,47 +207,47 @@ func rightSideView(root *TreeNode) []int {
 	return res
 }
 
-
 /**
 9、题目描述	二叉树的锯齿形层序遍历
 给定一个二叉树，返回其节点值的锯齿形层序遍历。（即先从左往右，再从右往左进行下一层遍历，以此类推，层与层之间交替进行）。
 题目描述：https://leetcode-cn.com/problems/binary-tree-zigzag-level-order-traversal/
   解题思路： 二叉树的层次遍历BFS，对奇数层进行翻转
- */
+*/
 func zigzagLevelOrder(root *TreeNode) [][]int {
 	if root == nil {
 		return nil
 	}
 
-	ans := make([][]int ,0)
-	queue := make([]*TreeNode,0)
-	queue = append(queue,root)
-	level := 0;
-	for len(queue) >0 {
-		res := make([]int,0)
+	ans := make([][]int, 0)
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	level := 0
+	for len(queue) > 0 {
+		res := make([]int, 0)
 		length := len(queue)
-		for i := 0;i< length;i++{
+		for i := 0; i < length; i++ {
 			first := queue[0]
-			res = append(res,first.Val)
+			res = append(res, first.Val)
 			if first.Left != nil {
-				queue = append(queue,first.Left)
+				queue = append(queue, first.Left)
 			}
 			if first.Right != nil {
-				queue = append(queue,first.Right)
+				queue = append(queue, first.Right)
 			}
 			queue = queue[1:]
 		}
 		// 本质上和层序遍历一样，我们只需要把奇数层的元素翻转即可
-		if level%2 == 1{
-			for i ,n := 0,len(res);i<n/2;i++ {
-				res[i],res[n-1-i]  = res[n-1-i],res[i]
+		if level%2 == 1 {
+			for i, n := 0, len(res); i < n/2; i++ {
+				res[i], res[n-1-i] = res[n-1-i], res[i]
 			}
 		}
-		ans = append(ans,res)
+		ans = append(ans, res)
 		level++
 	}
 	return ans
 }
+
 /**
 10、
 	1、题目描述： 翻转二叉树
@@ -260,7 +260,7 @@ func zigzagLevelOrder(root *TreeNode) [][]int {
 	其中 n 是树中节点的个数。在反转之前，不论怎样我们至少都得访问每个节点至少一次，因此这个问题无法做地比 O(n)更好了。
 */
 
-func invertTreeNode(root *TreeNode)*TreeNode{
+func invertTreeNode(root *TreeNode) *TreeNode {
 	if root == nil {
 		return nil
 	}
@@ -268,7 +268,7 @@ func invertTreeNode(root *TreeNode)*TreeNode{
 	left := invertTreeNode(root.Left)
 	root.Right = right
 	root.Left = left
-	return  root
+	return root
 }
 
 /**
@@ -315,7 +315,6 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 	}
 	return left
 }
-
 
 /**
  12、题目描述：路径总和 I
@@ -426,8 +425,6 @@ func dfsSubsets(nums []int, k int, current []int, res *[][]int) {
 	current = current[:len(current)-1]
 }
 
-
-
 /**
 124. 二叉树中的最大路径和
 路径 被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
@@ -498,26 +495,45 @@ func dfsSubsets(nums []int, k int, current []int, res *[][]int) {
 思考递归问题，不要纠结细节实现，结合求解的目标，自顶而下、屏蔽细节地思考。随着递归出栈，子问题自下而上地解决，最后解决了整个问题，内部细节是子递归帮你去做的。
 你要做的只是写好递归的处理逻辑，怎么处理当前子树？需要返回东西吗？返回什么？再设置好递归的出口。其实就是——正确定义递归函数。
 
+
+解题思路：
+	1、题目要求出一个二叉树的最大路径和，路径和就是把一条路径上面节点的值加起来，这一题的难点在于路径的方向不固定，只要是任意两点间的通路都算是有效路径。
+这时我们得需要当前节点左右子树的信息，所以我们可以考虑使用之前提到的 自底向上 的分治，有了当前节点，左右子树到当前节点的最大路径，我们可以看看这里会有几种情况，我用 root 表示当前节点，left 表示左子树到 root 的最大和的路径，right 表示右子树到 root 的最大和的路径：
+
+root 和左右路径形成路径（left – root – right）
+
+root 和左路径形成路径（left – root）
+
+root 和右路径形成路径（root – right）
+
+root 自成路径（root）
+
+你可以看到这四种情况都会把当前节点考虑在内，我们可以更新这里的最大值。
+
+但是需要注意的是，我们返回的时候，第一种情况是不能返回的，因为对于上一层节点来说，其无法形成有效的路径，因此我们只需要将 2，3，4 中的最大值返回即可，当然，更新全局答案的时候，这 4 种情况都需要考虑在内的
+
 */
 
-func maxPathSum(root *Node) int {
-	maxSum := math.MinInt32
-	var dfs func(root *Node) int
-	dfs = func(root *Node) int {
-		if root == nil {
-			return 0
-		}
-		left := dfs(root.Left)
-		right := dfs(root.Right)
-		innerMaxSum := left + root.Value + right
-
-		maxSum = max(maxSum, innerMaxSum)
-
-		outputMaxSum := root.Value + max(left, right)
-		return max(outputMaxSum, 0)
+func maxPathSum(root *TreeNode) int {
+	if root == nil {
+		return 0
 	}
-	dfs(root)
+	maxSum := math.MinInt32
+	dfsHelper(root, &maxSum)
 	return maxSum
+}
+
+func dfsHelper(root *TreeNode, maxSum *int) int {
+	if root == nil {
+		return 0
+	}
+	// 如果左右子树返回的最大路径值小于 0
+	// 直接将值设为 0，也就是不考虑对应的路径
+	leftSum := max(0, dfsHelper(root.Left, maxSum))
+	rightSum := max(0, dfsHelper(root.Right, maxSum))
+	//自底向上的分治,直到到了最底层，才开始计算并返回答案
+	*maxSum = max(*maxSum, root.Val+leftSum+rightSum)
+	return max(root.Val+leftSum, root.Val+rightSum)
 }
 
 func max(a, b int) int {
@@ -526,7 +542,6 @@ func max(a, b int) int {
 	}
 	return b
 }
-
 
 //二叉树遍历例题总结：
 
@@ -780,4 +795,3 @@ func area(grid [][]int, r int, c int) int {
 func inArea(grid [][]int, r int, c int) bool {
 	return 0 <= r && r < len(grid) && 0 <= c && c < len(grid[0])
 }
-
