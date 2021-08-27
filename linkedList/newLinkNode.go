@@ -34,7 +34,7 @@ func reverseList(head *ListNode) *ListNode {
 }
 
 /**
-递归实现 链表翻转
+2、递归实现 链表翻转
 */
 func reverseList2(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
@@ -47,7 +47,7 @@ func reverseList2(head *ListNode) *ListNode {
 }
 
 /*
-	链表反转II
+	4、链表反转II
 	题目描述：
 			给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表
 	示例1：
@@ -87,7 +87,7 @@ func reverseBetween(head *Node, left int, right int) *Node {
 }
 
 /**
-	2、合并两个排序的链表
+	5、合并两个排序的链表
 	输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是递增排序的。
 示例1：
 输入：1->2->4, 1->3->4
@@ -119,7 +119,7 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 }
 
 /**
-3 题目描述 合并k个有序链表
+ 6、题目描述 合并k个有序链表
 解题思路
 将链表拆分为lists[:len(lists)/2]和lists[len(lists)/2:]两部分，
 分别使用mergeKLists进行递归直至lists中只有一个链表时返回，
@@ -142,7 +142,7 @@ func mergeKLists(lists []*ListNode) *ListNode {
 }
 
 /**
-	4、题目
+	7、题目
 输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，
 即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，
 它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。
@@ -173,7 +173,7 @@ func getKthFromEnd(head *ListNode, k int) *ListNode {
 }
 
 /*
-5、题目描述
+8、题目描述
 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
 
@@ -217,7 +217,7 @@ func swapPairs(head *Node) *Node {
 }
 
 /**
-	6 、分割链表
+	9 、分割链表
 	问题描述： 给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
 		你应当 保留 两个分区中每个节点的初始相对位置。
 
@@ -250,7 +250,7 @@ func partition(head *Node, x int) *Node {
 }
 
 /***
-	7、删除链表的倒数第 N 个结点
+	9、删除链表的倒数第 N 个结点
 	我们也可以在遍历链表的同时将所有节点依次入栈。根据栈「先进后出」的原则，我们弹出栈的第 nn 个节点就是需要删除的节点，并且目前栈顶的节点就是待删除节点的前驱节点。这样一来，删除操作就变得十分方便了。
 复杂度分析
 时间复杂度：O(L)，其中 L 是链表的长度。
@@ -270,7 +270,7 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 }
 
 /*
-8、题目描述：对链表进行 插入排序
+10、题目描述：对链表进行 插入排序
 
 插入排序的动画演示如上。从第一个元素开始，该链表可以被认为已经部分排序（用黑色表示）。
 每次迭代时，从输入数据中移除一个元素（用红色表示），并原地将其插入到已排好序的链表中。
@@ -328,7 +328,7 @@ func insertionSortList(head *ListNode) *ListNode {
 }
 
 /**
-
+11、
 给定一个带有头结点 head 的非空单链表，返回链表的中间结点。
 如果有两个中间结点，则返回第二个中间结点。
 示例 1：
@@ -366,7 +366,7 @@ func middleNode(head *ListNode) *ListNode {
 }
 
 /*
-	 题目描述：奇偶链表
+13、题目描述：奇偶链表
 给定一个单链表，把所有的奇数节点和偶数节点分别排在一起。请注意，
 这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
 
@@ -424,7 +424,7 @@ func oddEvenList(head *ListNode) *ListNode {
 }
 
 /**
-请判断一个链表是否为回文链表。
+14、请判断一个链表是否为回文链表。
 
 示例 1:
 
@@ -473,7 +473,7 @@ func isPalindrome(head *ListNode) bool {
 
 /*
 
-1、问题描述：  重排链表
+15、问题描述：  重排链表
 给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
 
@@ -532,8 +532,7 @@ func reorderList(head *ListNode) {
 }
 
 /**
-
-环形链表
+	16、判断是否有环 （面试时，可以直接给面试官讲 获取环的入口 ，因为肯定要先判断是否有环）
 给定一个链表，判断链表中是否有环。
 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
 示例 1：
@@ -566,4 +565,119 @@ func hasCycle(head *ListNode) bool {
 		fast = fast.Next.Next
 	}
 	return true
+}
+
+/**
+18、环的入口
+题解链接：
+https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/
+ 	环行链表入口节点：
+
+	解题思路：
+这类链表题目一般都是使用双指针法解决的，例如寻找距离尾部第K个节点、寻找环入口、寻找公共尾部入口等。
+算法流程：
+双指针第一次相遇： 设两指针 fast，slow 指向链表头部 head，fast 每轮走 2 步，slow 每轮走 1 步；
+
+第一种结果： fast 指针走过链表末端，说明链表无环，直接返回 null；
+
+TIPS: 若有环，两指针一定会相遇。因为每走 1 轮，fast 与 slow 的间距 +1，fast 终会追上 slow；
+第二种结果： 当fast == slow时， 两指针在环中 第一次相遇 。下面分析此时fast 与 slow走过的 步数关系 ：
+
+设链表共有 a+b 个节点，其中 链表头部到链表入口 有 a 个节点（不计链表入口节点）， 链表环 有 b 个节点（这里需要注意，a 和 b 是未知数，例如图解上链表 a=4 , b=5）；设两指针分别走了 f，s 步，则有：
+fast 走的步数是slow步数的 2 倍，即 f = 2s（解析： fast 每轮走 2 步）
+fast 比 slow多走了 n 个环的长度，即 f = s + nb（ 解析： 双指针都走过 a 步，然后在环内绕圈直到重合，重合时 fast 比 slow 多走 环的长度整数倍 ）；
+以上两式相减得：f = 2nb，s = nb，即fast和slow 指针分别走了 2n，n 个 环的周长 （注意： n 是未知数，不同链表的情况不同）。
+目前情况分析：
+
+概括一下：
+根据：
+f=2s （快指针每次2步，路程刚好2倍）
+f = s + nb (相遇时，刚好多走了n圈）
+推出：s = nb
+从head结点走到入环点需要走 ： a + nb， 而slow已经走了nb，那么slow再走a步就是入环点了。
+如何知道slow刚好走了a步？ 从head开始，和slow指针一起走，相遇时刚好就是a步
+
+复杂度分析：
+时间复杂度 O(N) ：第二次相遇中，慢指针须走步数 a < a + b；第一次相遇中，慢指针须走步数 a + b - x < a + b，其中 x 为双指针重合点与环入口距离；因此总体为线性复杂度；
+空间复杂度 O(1)：双指针使用常数大小的额外空间。
+
+*/
+func detectCycle(head *ListNode) *ListNode {
+	fast, slow := head, head
+	for fast != nil {
+		slow = slow.Next
+		if fast.Next == nil {
+			return nil
+		}
+		fast = fast.Next.Next
+		if slow == fast {
+			temp := head
+			for temp != slow {
+				temp = temp.Next
+				slow = slow.Next
+			}
+			return temp
+		}
+	}
+	return nil
+}
+
+/**
+19. 相交链表
+面试的时候可以先询问面试官 要的时间复杂度。然后给出这两种方案。
+给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表没有交点，返回 null 。
+题目链接：https://leetcode-cn.com/problems/intersection-of-two-linked-lists
+
+1、解决思路：1、方法一：哈希集合
+思路和算法
+
+1、判断两个链表是否相交，可以使用哈希集合存储链表节点。
+
+2、首先遍历链表headA，并将链表 headA 中的每个节点加入哈希集合中。然后遍历链表 headB，对于遍历到的每个节点，判断该节点是否在哈希集合中：
+	如果当前节点不在哈希集合中，则继续遍历下一个节点；
+	如果当前节点在哈希集合中，则后面的节点都在哈希集合中，即从当前节点开始的所有节点都在两个链表的相交部分，因此在链表headB 中遍历到的第一个在哈希集合中的节点就是两个链表相交的节点，返回该节点。
+	如果链表headB 中的所有节点都不在哈希集合中，则两个链表不相交，返回 null。
+
+	时间复杂度 ： o（m+n）
+	空间复杂度 n
+	时间复杂度：O(m+n)，其中 m 和 n 是分别是链表 headA 和headB 的长度。需要遍历两个链表各一次。
+	空间复杂度：O(m)，其中 m 是链表headA 的长度。需要使用哈希集合存储链表 headA 中的全部节点。
+
+3、双指针
+	复杂度分析
+	时间复杂度：O(m+n)其中 m 和 n 是分别是链表 headA 和 headB 的长度。两个指针同时遍历两个链表，每个指针遍历两个链表各一次。
+	空间复杂度：O(1)
+	参考解题链接：https://leetcode-cn.com/problems/intersection-of-two-linked-lists/solution/tu-jie-xiang-jiao-lian-biao-by-user7208t/
+*/
+func getIntersectionNodeI(headA, headB *ListNode) *ListNode {
+	vis := make(map[*ListNode]bool, 0)
+	for temp := headA; temp != nil; temp = temp.Next {
+		vis[temp] = true
+	}
+	for temp := headB; temp != nil; temp = temp.Next {
+		if vis[temp] {
+			return temp
+		}
+	}
+	return nil
+}
+
+func getIntersectionNodeII(headA, headB *ListNode) *ListNode {
+	if headA == nil || headB == nil {
+		return nil
+	}
+	pa, pb := headA, headB
+	for pa != pb {
+		if pa == nil {
+			pa = headB
+		} else {
+			pa = pa.Next
+		}
+		if pb == nil {
+			pb = headA
+		} else {
+			pb = pb.Next
+		}
+	}
+	return pa
 }
