@@ -36,7 +36,7 @@ func main() {
 }
 
 /**
- 题目描述：假设你正在爬楼梯。需要 n 阶你才能到达楼顶。每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+ 1题目描述：假设你正在爬楼梯。需要 n 阶你才能到达楼顶。每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
  解题方法： 动态规划
 不难发现，这个问题可以被分解为一些包含最优子结构的子问题，即它的最优解可以从其子问题的最优解来有效地构建，我们可以使用动态规划来解决这一问题。
 第 ii 阶可以由以下两种方法得到：
@@ -116,7 +116,7 @@ func maxSubArray(nums []int) int {
 时间复杂度：O(n)，只需要遍历一次。
 空间复杂度：O(1)，只使用了常数个变量。
 */
-func maxProfit(prices []int) int {
+func maxProfit1(prices []int) int {
 	minPrice := prices[0]
 	maxProfit := 0
 	for i := 1; i < len(prices); i++ {
@@ -147,7 +147,7 @@ func maxProfit(prices []int) int {
 	但是换个思路想一下，5-1等于（2-1）+（3-2）+（4-3）+（5-4），也就是说这种情况只要后面数字大于前面数字，那就叠加利润，
 、	最后一定是最大利润，如果中间有一个数是小的，那么直接跳过即可，相当于分成了几个这样的数列。
 */
-func maxProfitTwo(prices []int) int {
+func maxProfit2(prices []int) int {
 	maxProfit := 0
 	for i := 1; i < len(prices); i++ {
 		if prices[i] > prices[i-1] {
@@ -156,6 +156,139 @@ func maxProfitTwo(prices []int) int {
 	}
 	return maxProfit
 }
+
+/**
+	4、题目描述：买卖股票（3）
+	给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
+	设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
+	注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+	题目链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/
+
+	解题思路：
+		方法一：动态规划
+		思路与算法
+		由于我们最多可以完成两笔交易，因此在任意一天结束之后，我们会处于以下五个状态中的一种：
+		a、未进行过任何操作
+		b、只进行过一次买操作
+		c、进行了一次买操作和一次卖操作，即完成了一笔交易
+		d、在完成了一笔交易的前提下，进行了第二次买操作
+		e、完成了全部两笔交易
+
+	由于第一个状态的利润显然为 0，因此我们可以不用将其记录。对于剩下的四个状态，
+	我们分别将它们的最大利润记为:buy1,sell1,buy2,sell2
+
+	1、对于 buy1而言，在第 i 天我们可以不进行任何操作，保持不变，也可以在未进行任何操作的前提下以prices[i] 的价格买入股票，那么buy1
+  的状态转移方程即为： buy1 = max(buy1[i-1] -prices[i])
+	2、对于sell1而言 在第 i 天我们可以不进行任何操作，保持不变，也可以在只进行过一次买操作的前提下以 prices[i] 的价格卖出股票，
+	那么sell1的状态转移方程为：
+		sell1 = max(sell1[i-1],buy1[i-1]+price[i-1=])
+
+	同理得 buy2 和 sell2
+			buy2 = max(buy2[i-1],sell1[i-1]-price[i])
+			sell2 = max(sell2[i-1]+buy2[i-1]+price[i])
+
+		解题链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/solution/mai-mai-gu-piao-de-zui-jia-shi-ji-iii-by-wrnt/
+*/
+func maxProfit3(prices []int) int {
+	buy1, sell1 := -prices[0], 0
+	buy2, sell2 := -prices[0], 0
+	for i := 1; i < len(prices); i++ {
+		buy1 = max(buy1, -prices[i])
+		sell1 = max(sell1, buy1+prices[i])
+		buy2 = max(buy2, sell1-prices[i])
+		sell2 = max(sell2, buy2+prices[i])
+	}
+	return sell2
+}
+
+/**
+1、题目描述：买卖股票的最佳时机含手续费、
+给定一个整数数组 prices，其中第 i 个元素代表了第 i 天的股票价格 ；整数 fee 代表了交易股票的手续费用。你可以无限次地完成交易，但是你每笔交易都需要付手续费。
+如果你已经购买了一个股票，在卖出它之前你就不能再继续购买股票了。返回获得利润的最大值。
+注意：这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费。
+
+题目链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/
+
+解题思路：方法一：动态规划
+考虑到「不能同时参与多笔交易」，因此每天交易结束后只可能存在手里有一支股票或者没有股票的状态。
+定义状态dp[i][0] 表示第 i 天交易完后手里没有股票的最大利润，dp[i][1] 表示第 i天交易完后手里持有一支股票的最大利润（i 从  开始）。
+1、
+	考虑 dp[i][0] 的转移方程，如果这一天交易完后手里没有股票，那么可能的转移状态为前一天已经没有股票，即dp[i−1][0]，或者前一天结束的时候手里持有一支股票，即 dp[i−1][1]，这时候我们要将其卖出，并获得 prices[i] 的收益，但需要支付fee 的手续费。
+	因此为了收益最大化，我们列出如下的转移方程：
+	dp[i][0]=max{dp[i−1][0],dp[i−1][1]+prices[i]−fee}
+2、再来按照同样的方式考虑 dp[i][1] 按状态转移，那么可能的转移状态为前一天已经持有一支股票
+	即 dp[i−1][1]，或者前一天结束时还没有股票，即 dp[i−1][0]，这时候我们要将其买入，并减少prices[i] 的收益。可以列出如下的转移方程：
+	dp[i][1]=max{dp[i−1][1],dp[i−1][0]−prices[i]}
+	对于初始状态，根据状态定义我们可以知道第 00 天交易结束的时候有 dp[0][0]=0 以及 dp[0][1]=−prices[0]。
+
+解题链接参考：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/solution/mai-mai-gu-piao-de-zui-jia-shi-ji-han-sh-rzlz/
+*/
+func maxProfit5(prices []int, fee int) int {
+	n := len(prices)
+	dp := make([][2]int, n)
+	dp[0][0], dp[0][1] = 0, 0-prices[0]
+	for i := 1; i < n; i++ {
+		dp[i][0] = max(dp[i-1][0], dp[i-1][1]+prices[i]-fee)
+		dp[i][1] = max(dp[i-1][1], dp[i-1][0]-prices[i])
+	}
+	return max(dp[n-1][0], dp[n-1][1])
+}
+
+/**
+	题目描述： 最佳买卖股票时机含冷冻期
+	给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+	设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+	你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+	卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+
+	输入: [1,2,3,0,2]
+	输出: 3
+	解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
+
+	题目链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/
+	解题思路：
+		方法一：动态规划
+		1、我们用 f[i] 表示第 i 天结束之后的「累计最大收益」。根据题目描述，由于我们最多只能同时买入（持有）一支股票，并且卖出股票后有冷冻期的限制，因此我们会有三种不同的状态：
+			a、我们目前持有一支股票，对应的「累计最大收益」记为 f[i][0]；
+			b、我们目前不持有任何股票，并且处于冷冻期中，对应的「累计最大收益」记为 f[i][1]；
+			c、我们目前不持有任何股票，并且不处于冷冻期中，对应的「累计最大收益」记为 f[i][2]。
+		2、对于 f[i][0]，我们目前持有的这一支股票可以是在第 i-1天就已经持有的，对应的状态为 f[i−1][0]；或者是第 ii 天买入的，那么第 i-1 天就不能持有股票并且不处于冷冻期中，
+           对应的状态为 f[i−1][2] 加上买入股票的负收益 prices[i]。
+				因此状态转移方程为：
+				f[i][0]=max(f[i−1][0],f[i−1][2]−prices[i])
+		3、对于 f[i][1]，我们在第 i 天结束之后处于冷冻期的原因是在当天卖出了股票，那么说明在第 i−1 天时我们必须持有一支股票，
+			对应的状态为 f[i−1][0] 加上卖出股票的正收益 prices[i]。因此状态转移方程为：
+			f[i][1]=f[i−1][0]+prices[i]
+		4、对于 f[i][2]，我们在第 i 天结束之后不持有任何股票并且不处于冷冻期，说明当天没有进行任何操作，即第 i−1 天时不持有任何股票：如果处于冷冻期，对应的状态为 f[i−1][1]；
+			如果不处于冷冻期，对应的状态为 f[i−1][2]。因此状态转移方程为：
+			f[i][2]=max(f[i−1][1],f[i−1][2])
+
+		这样我们就得到了所有的状态转移方程。如果一共有 nn 天，那么最终的答案即为
+		max(f[n−1][0],f[n−1][1],f[n−1][2])
+
+	解题链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/solution/zui-jia-mai-mai-gu-piao-shi-ji-han-leng-dong-qi-4/
+*/
+func maxProfit6(prices []int) int {
+	if len(prices) == 0 {
+		return 0
+	}
+	n := len(prices)
+	// f[i][0]: 手上持有股票的最大收益
+	// f[i][1]: 手上不持有股票，并且处于冷冻期中的累计最大收益
+	// f[i][2]: 手上不持有股票，并且不在冷冻期中的累计最大收益
+	f := make([][3]int, n)
+	f[0][0] = -prices[0]
+	for i := 1; i < n; i++ {
+		f[i][0] = max(f[i-1][0], f[i-1][2]-prices[i])
+		f[i][1] = f[i-1][0] + prices[i]
+		f[i][2] = max(f[i-1][1], f[i-1][2])
+	}
+	return max(f[n-1][1], f[n-1][2])
+}
+
+/**
+
+ */
 
 /**
 题目描述： 不同路径 （1）
