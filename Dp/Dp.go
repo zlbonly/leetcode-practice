@@ -283,7 +283,7 @@ func maxProfit6(prices []int) int {
      偷窃到的最高金额 = 1 + 3 = 4 。
 
 动态转移方程：
-dp[k] = Max (dp[k-1],dp[k-2]+dp[k])
+dp[k] = Max (dp[k-1],dp[k-2]+nums[i])
 
 空间复杂度O(n)
 */
@@ -402,36 +402,45 @@ func uniquePaths(m int, n int) int {
 现在，从 obstacleGrid[1,1] 开始遍历整个数组，如果某个格点初始不包含任何障碍物，就把值赋为上方和左侧两个格点方案数之和 obstacleGrid[i,j] = obstacleGrid[i-1,j] + obstacleGrid[i,j-1]。
 如果这个点有障碍物，设值为 0 ，这可以保证不会对后面的路径产生贡献。
 
+状态转移方程：
+				1、有障碍物 0
+	dp[i][j] =
+				2、没有障碍物 d[i][j-1] + dp[i-1][j]
+
 */
+
 func uniquePathsWithObstacles(obstacleGrid [][]int) int {
-	matrix := obstacleGrid
-	if len(matrix) == 0 || len(matrix[0]) == 0 || matrix[0][0] == 1 {
-		return 0
+	m, n := len(obstacleGrid), len(obstacleGrid[0])
+	// 定义一个dp数组
+	dp := make([][]int, m)
+	for i, _ := range dp {
+		dp[i] = make([]int, n)
 	}
-	// 处理第一行
-	m, n := len(matrix), len(matrix[0])
-	dp := make([]int, n)
-	for j := 0; j < n; j++ {
-		if matrix[0][j] == 0 {
-			dp[j] = 1
-		} else {
+	// 初始化
+	for i := 0; i < m; i++ {
+		// 如果是障碍物, 后面的就都是0, 不用循环了
+		if obstacleGrid[i][0] == 1 {
 			break
 		}
+		dp[i][0] = 1
 	}
-
-	for i := 1; i < m; i++ { // 从第二行开始
-		if matrix[i][0] == 1 { // 处理每一个的第一列
-			dp[0] = 0
+	for i := 0; i < n; i++ {
+		if obstacleGrid[0][i] == 1 {
+			break
 		}
-		for j := 1; j < n; j++ { // 从第二列开始
-			if matrix[i][j] == 1 { // 遇到1则到达第j列置为0
-				dp[j] = 0
-			} else {
-				dp[j] += dp[j-1]
+		dp[0][i] = 1
+	}
+	// dp数组推导过程
+	for i := 1; i < m; i++ {
+		for j := 1; j < n; j++ {
+			// 如果obstacleGrid[i][j]这个点是障碍物, 那么我们的dp[i][j]保持为0
+			if obstacleGrid[i][j] != 1 {
+				// 否则我们需要计算当前点可以到达的路径数
+				dp[i][j] = dp[i-1][j] + dp[i][j-1]
 			}
 		}
 	}
-	return dp[n-1]
+	return dp[m-1][n-1]
 }
 
 func max(a int, b int) int {
