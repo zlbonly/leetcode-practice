@@ -170,20 +170,6 @@ func trap3(height []int) int {
 	return sum
 }
 
-func Min(left int, right int) int {
-	if left > right {
-		return right
-	}
-	return left
-}
-
-func Max(left int, right int) int {
-	if left > right {
-		return left
-	}
-	return right
-}
-
 /**
 题型二、下一个更大元素1
 1、题目描述：

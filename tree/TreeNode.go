@@ -543,6 +543,33 @@ func max(a, b int) int {
 	return b
 }
 
+/**
+	二叉树的完整性校验
+	给定一个二叉树，确定它是否是一个完全二叉树。
+完全二叉树是指最后一层左边是满的，右边可能慢也不能不满，然后其余层都是满的，根据这个特性，利用层遍历。如果我们当前遍历到了NULL结点，如果后续还有非NULL结点，说明是非完全二叉树。
+参考链接：
+		https://leetcode-cn.com/problems/check-completeness-of-a-binary-tree/solution/ceng-xu-bian-li-pan-duan-ji-ke-jie-jue-b-xcml/
+*/
+
+func isCompleteTree(root *TreeNode) bool {
+	queue := []*TreeNode{root}
+	lastIsNil := false
+	for len(queue) != 0 {
+		node := queue[0]
+		queue = queue[1:]
+		if node == nil { // 层次遍历出现nil（完全二叉树只能是最后一个节点后面全是nil才行）
+			lastIsNil = true
+		} else {
+			if lastIsNil { // 上次为nil,本次为节点则说明不是完全二叉树
+				return false
+			}
+			queue = append(queue, node.Left)
+			queue = append(queue, node.Right)
+		}
+	}
+	return true
+}
+
 //二叉树遍历例题总结：
 
 /**
