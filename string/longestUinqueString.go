@@ -361,6 +361,44 @@ func longestSubarray(nums []int) int {
 	return maxLength
 }
 
+/**
+题目描述： 和为s的连续正数序列
+输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
+序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
+
+demo：
+	输入：target = 9
+	输出：[[2,3,4],[4,5]]
+
+解题思路：findContinuousSequence 及其注释
+
+*/
+
+func findContinuousSequence(target int) [][]int {
+
+	// plow，phigh 两个起点，相当于动态窗口的两边，根据其窗口内的值来确定窗口的位置和大小
+	plow, phigh, cur := 1, 2, 0
+	result := make([][]int, 0)
+	for plow < phigh {
+		// 由于是连续的，差为1的等差序列，那么求和公式（a0 + an）*n /2
+		cur = (plow + phigh) * (phigh - plow + 1) / 2
+		// 相等，那么将窗口范围内的所有数添加进结果集。
+		if cur == target {
+			temp := make([]int, 0)
+			for i := plow; i <= phigh; i++ {
+				temp = append(temp, i)
+			}
+			result = append(result, temp)
+			plow++
+		} else if cur < target { // 如果当前窗口内的值和小于target,那么右边窗口移动一下
+			phigh++
+		} else { // 如果当前窗口内的值和大于sum，那么左边的窗口移动一下
+			plow++
+		}
+	}
+	return result
+}
+
 func max(a int, b int) int {
 	if a > b {
 		return a
