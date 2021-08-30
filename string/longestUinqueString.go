@@ -320,6 +320,47 @@ func threeSum(nums []int) [][]int {
 	return ret
 }
 
+/**
+题目描述： 删掉一个元素以后全为 1 的最长子数组
+给你一个二进制数组 nums ，你需要从中删掉一个元素。请你在删掉元素的结果数组中，返回最长的且只包含 1 的非空子数组的长度。如果不存在这样的子数组，请返回 0
+提示 1：
+输入：nums = [1,1,0,1]
+输出：3
+解释：删掉位置 2 的数后，[1,1,1] 包含 3 个 1 。
+
+解题思路：
+1、设置两个指针 left 和 right 让其分别指向窗口的两端。其中 right 指针是主动移动的，而 left 指针是被迫移动的。其中，count 为窗口里 0 的个数，初始化为 0。
+
+2、首先，看 right 指针位置上的元素是否为 0：若为 0，则 count + 1。当滑动窗口中 0 的个数 count 超过了 1 时(因为只让删掉一个元素)，则就应该将 left 指针向右移动一位了，并且要看 left 指针位置上的值是否为 0，若为 0 则在 left 指针向右移动时，应先将 count - 1 ，以保证滑动窗口中 0 的个数能够及时更新。
+然后，判断完大小后，再使 right 指针向右移动一位，进行下一个元素的判断。
+
+3、因为右指针是主动移动的，右指针向右移动之前，若 nums[right] == 0，则count 的值应该 + 1.
+4、因为左指针是被动移动的，左指针向右移动之前，若 nums[left] == 0，则 count 的值应该 - 1.
+
+*/
+func longestSubarray(nums []int) int {
+
+	// 左指针，右指针，窗口中0的个树，最大值
+	left, right, zeroCount, maxLength := 0, 0, 0, 0
+	for right < len(nums) {
+		if nums[right] == 0 {
+			zeroCount++
+		}
+
+		// 只让删除一个元素
+		for zeroCount > 1 {
+			if nums[left] == 0 {
+				zeroCount--
+			}
+			left++
+		}
+		// 因为要删除一个元素，所以元素的长度不需要+1
+		maxLength = max(maxLength, right-left)
+		right++
+	}
+	return maxLength
+}
+
 func max(a int, b int) int {
 	if a > b {
 		return a
