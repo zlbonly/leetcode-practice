@@ -205,14 +205,32 @@ func minWindow(s string, t string) string {
 
 动态转移方程：
 
-			  {			dp[i-1][j-1] + 1 ,  text1[i-1] = text[j-1]
+			  {			dp[i-1][j-1] + 1 ,  text1[i] = text[j]
 dp[i][j]  =
-              {			max(dp[i-1][j],dp[i][j-1]), text1[i-1]  != text2[j-1]
+              {			max(dp[i-1][j],dp[i][j-1]), text1[i]  != text2[j]
 
 https://leetcode-cn.com/problems/longest-common-subsequence/solution/zui-chang-gong-gong-zi-xu-lie-tu-jie-dpz-6mvz/
 */
+func longestCommonSubSequence(text1 string, text2 string) int {
+	m, n := len(text1), len(text2)
+	dp := make([][]int, m)
+	for i, _ := range dp {
+		dp[i] = make([]int, n)
+	}
+	dp[0][0] = 0
+	for i := 1; i < m; i++ {
+		for j := 1; j < n; j++ {
+			if text1[i] == text2[j] {
+				dp[i][j] = dp[i-1][j-1] + 1
+			} else {
+				dp[i][j] = max(dp[i-1][j], dp[i][j-1]) + 1
+			}
+		}
+	}
+	return dp[m-1][n-1]
+}
 
-func longestCommonSubsequence(text1 string, text2 string) int {
+/*func longestCommonSubsequence(text1 string, text2 string) int {
 	m, n := len(text1), len(text2)
 	dp := make([][]int, m+1)
 	for i := range dp {
@@ -228,7 +246,7 @@ func longestCommonSubsequence(text1 string, text2 string) int {
 		}
 	}
 	return dp[m][n]
-}
+}*/
 
 /*
 5、题目描述：两数子和（I）
