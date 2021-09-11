@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"sort"
 	"strings"
 )
@@ -139,47 +138,55 @@ func longestCommonPrefix(strs []string) string {
 参考流程图分析：
 https://github.com/zlbonly/simple-go-algorithm/blob/master/pics/minWindow.gif
 
+思路不难，滑动窗口的基本操作而已。
+
+1、初始化左右指针 left = right = 0，把索引区间 [left, right] 称为一个「窗口」。
+2、不断地增加 right 指针扩大窗口 [left, right]，直到窗口中的字符串符合要求（包含了 T 中的所有字符）。
+此时，停止增加 right，转而不断增加 left 指针缩小窗口 [left, right]，直到窗口中的字符串不再符合要求（不包含 T 中的所有字符了）。同时，每次增加 left，我们都要更新一轮结果。
+3、重复第 2 和第 3 步，直到 right 到达字符串 S 的尽头。
+4、其中，第 2 步相当于在寻找一个「可行解」，然后第 3 步在优化这个「可行解」，最终找到最优解。左右指针轮流前进，窗口大小增增减减，窗口不断向右滑动。
+
 */
+
 func minWindow(s string, t string) string {
-	ori, cnt := map[byte]int{}, map[byte]int{}
-	for i := 0; i < len(t); i++ {
-		ori[t[i]]++
-	}
+	//  need数组记录t字符串内字符出现的频率
+	//  window数组记录窗口内字符出现的频率
+	need, window := map[byte]int{}, map[byte]int{}
+	matchLen := 0       // 匹配长度
+	minLength := len(s) // 最短匹配字符串长度
+	// 窗口左边界，窗口右边界
+	windowLeft, windowRight := -1, -1
 
-	sLen := len(s)
-	len := math.MaxInt32
-	asrL, asrR := -1, -1
-
-	check := func() bool {
-		for k, v := range ori {
-			if cnt[k] < v {
-				return false
-			}
-		}
-		return true
+	for i := range t {
+		need[t[i]]++
 	}
-	for l, r := 0, 0; r < sLen; r++ {
-		if r < sLen && ori[s[r]] > 0 {
-			cnt[s[r]]++
+	// 依次遍历s，l为左指针，r为右指针
+	for left, right := 0, 0; right < len(s); right++ {
+		window[s[right]]++
+		if _, ok := need[s[right]]; ok && window[s[right]] == need[s[right]] {
+			matchLen++
 		}
 
-		for check() && l <= r {
-			if r-l+1 < len {
-				len = r - l + 1
-				asrL, asrR = l, l+len
+		// 达到匹配长度时，要缩减左、右指针之间的长度，得到最短匹配字符串
+		for matchLen == len(need) {
+			tempLength := right - left + 1 // 窗口长度
+			if tempLength <= minLength {
+				minLength = tempLength
+				windowLeft, windowRight = left, right
 			}
-
-			if _, ok := ori[s[l]]; ok {
-				cnt[s[l]] -= 1
+			// 左指针指向的字符在t里且数量一致时，匹配长度-1
+			if _, ok := need[s[left]]; ok && window[s[left]] == need[s[left]] {
+				matchLen--
 			}
-			l++
+			// 左指针往前移动
+			window[s[left]]--
+			left++
 		}
 	}
-
-	if asrL == -1 {
+	if windowLeft == -1 {
 		return ""
 	}
-	return s[asrL:asrR]
+	return s[windowLeft : windowRight+1]
 }
 
 /**
