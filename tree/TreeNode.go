@@ -90,7 +90,8 @@ func isSameTree(p *TreeNode, q *TreeNode) bool {
 /**
  6、重建二叉树
 1.题目概述
-输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
+输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
+例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
 
 2.解题思路
 前序排列顺序为 根-左-右，中序排列为左-根-右。
@@ -346,6 +347,41 @@ func levelOrderN(root *TreeNode) [][]int {
 }
 
 /**
+	二叉树的完整性校验
+	给定一个二叉树，确定它是否是一个完全二叉树。
+isCompleteTree
+完全二叉树是指最后一层左边是满的，右边可能慢也不能不满，然后其余层都是满的，根据这个特性，利用层遍历。如果我们当前遍历到了NULL结点，如果后续还有非NULL结点，说明是非完全二叉树。
+参考链接：
+		https://leetcode-cn.com/problems/check-completeness-of-a-binary-tree/solution/ceng-xu-bian-li-pan-duan-ji-ke-jie-jue-b-xcml/
+*/
+
+func isCompleteTree(root *TreeNode) bool {
+	queue := []*TreeNode{root}
+	lastIsNil := false
+	for len(queue) > 0 {
+		cur := queue[0]
+		queue = queue[1:]
+		if lastIsNil == true && cur != nil {
+			return false
+		}
+
+		if cur == nil {
+			lastIsNil = true
+			continue
+		}
+		queue = append(queue, cur.Left)
+		queue = append(queue, cur.Right)
+	}
+	return true
+}
+
+/**
+验证完全二叉树
+对于一个完全二叉树，层序遍历的过程中遇到第一个空节点之后不应该再出现非空节点
+
+*/
+
+/**
  12、题目描述：路径总和 I
 给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。
 说明: 叶子节点是指没有子节点的节点。
@@ -570,33 +606,6 @@ func max(a, b int) int {
 		return a
 	}
 	return b
-}
-
-/**
-	二叉树的完整性校验
-	给定一个二叉树，确定它是否是一个完全二叉树。
-完全二叉树是指最后一层左边是满的，右边可能慢也不能不满，然后其余层都是满的，根据这个特性，利用层遍历。如果我们当前遍历到了NULL结点，如果后续还有非NULL结点，说明是非完全二叉树。
-参考链接：
-		https://leetcode-cn.com/problems/check-completeness-of-a-binary-tree/solution/ceng-xu-bian-li-pan-duan-ji-ke-jie-jue-b-xcml/
-*/
-
-func isCompleteTree(root *TreeNode) bool {
-	queue := []*TreeNode{root}
-	lastIsNil := false
-	for len(queue) != 0 {
-		node := queue[0]
-		queue = queue[1:]
-		if node == nil { // 层次遍历出现nil（完全二叉树只能是最后一个节点后面全是nil才行）
-			lastIsNil = true
-		} else {
-			if lastIsNil { // 上次为nil,本次为节点则说明不是完全二叉树
-				return false
-			}
-			queue = append(queue, node.Left)
-			queue = append(queue, node.Right)
-		}
-	}
-	return true
 }
 
 //二叉树遍历例题总结：
