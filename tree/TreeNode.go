@@ -317,6 +317,35 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 }
 
 /**
+N叉树层次遍历
+*/
+func levelOrderN(root *TreeNode) [][]int {
+	resut := make([][]int, 0)
+
+	if root == nil {
+		return resut
+	}
+
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+
+	for len(queue) > 0 {
+		temp := make([]int, 0)
+		length := len(queue)
+		for i := 0; i < length; i++ {
+			first := queue[0]
+			for j := 0; j < len(first.Children); j++ {
+				queue = append(queue, first.Children[j])
+			}
+			temp = append(temp, first.Val)
+			queue = queue[1:]
+		}
+		resut = append(resut, temp)
+	}
+	return resut
+}
+
+/**
  12、题目描述：路径总和 I
 给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。
 说明: 叶子节点是指没有子节点的节点。
