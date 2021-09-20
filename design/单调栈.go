@@ -56,6 +56,40 @@ package main
 当前高度大于栈顶高度，出栈，计算出当前墙和栈顶的墙之间水的多少，然后计算当前的高度和新栈的高度的关系，重复第 2 步。直到当前墙的高度不大于栈顶高度或者栈空，然后把当前墙入栈，指针后移。
 。
 */
+
+// 为什么位置 i 最多能盛 2 格水呢？
+//因为，位置 i 能达到的水柱高度和其左边的最高柱子、右边的最高柱子有关，
+//我们分别称这两个柱子高度为 l_max 和 r_max；位置 i 最大的水柱高度就是 min(l_max, r_max)。
+/**
+更进一步，对于位置 i，能够装的水为：
+	water[i] = min(
+               # 左边最高的柱子
+               max(height[0..i]),
+               # 右边最高的柱子
+               max(height[i..end])
+            ) - height[i]
+
+暴力破解
+*/
+
+/*int trap(vector<int>& height) {
+int n = height.size();
+int res = 0;
+for (int i = 1; i < n - 1; i++) {
+int l_max = 0, r_max = 0;
+// 找右边最高的柱子
+for (int j = i; j < n; j++)
+r_max = max(r_max, height[j]);
+// 找左边最高的柱子
+for (int j = i; j >= 0; j--)
+l_max = max(l_max, height[j]);
+// 如果自己就是最高的话，
+// l_max == r_max == height[i]
+res += min(l_max, r_max) - height[i];
+}
+return res;
+}*/
+
 func trapRain(height []int) int {
 	length := len(height)
 	stack := make([]int, 0)
@@ -77,6 +111,45 @@ func trapRain(height []int) int {
 		current++
 	}
 	return sum
+}
+
+/**
+
+其实拿到这个问题很容易想到，对于每一个柱形图，只要向左向右去遍历，
+然后找到左边第一个小于他的点和右边第一个小于他的点，就可以得到宽度，
+然后再乘上它的高，就可以得到当前的矩形面积。从左到右依次遍历并且更新结果，最后就可以求得最大的矩形面积。
+
+第一个元素，直接入栈，栈中元素为0（2），栈中保存下标，括号里面表示对应的元素
+第二个元素，比第一个元素小，弹出第一个元素，弹出第一个的元素的时候，要计算它左右能达到的面积，
+	2对应的最大面积为2*1，更新面积，然后第二个元素入栈，栈中元素1（1）
+第三个元素，入栈，栈中元素1（1）、2（5）
+第四个元素，入栈，栈中元素1（1）、2（5）、3（6）
+第五个元素，比栈顶的要小，所以要出栈，首先3出栈，6对应的左边第一个比他小的就是下标2对应的5，
+	右边就是当前的下标对应的2，所以面积为6，然后5出栈，他左边第一个比他小的是下标1对应的1，右边则是当前下标对应的2，所以更新面积得到10。然后入栈，栈中元素1（1）、4（5）
+最后一个元素3，入栈，栈中元素1（1）、2（5）、3（6），然后依次弹出，并更新面积。
+
+*/
+func largestRectangleArea(heights []int) int {
+	stack := make([]int, 0)
+	area := 0
+
+	for index, value := range heights {
+		for len(stack) > 1 && value < heights[stack[len(stack)-1]] {
+
+			width := index - stack[len(stack)-1]
+			area = max(area, heights[stack[len(stack)-1]]*width)
+			stack = stack[:len(stack)-1]
+		}
+		stack = append(stack, index)
+	}
+	return area
+}
+
+func max(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 /*

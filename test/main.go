@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"unsafe"
+)
 
 type Student struct {
 	Name string
@@ -27,11 +30,6 @@ func Slice() {
 }
 
 func dynamic() {
-	s := "Escape"
-	fmt.Println(s)
-
-	l := 20
-	c := make([]int, 0, l) // 动态分配不定空间 逃逸
 }
 
 type UserData struct {
@@ -59,15 +57,46 @@ func GetUserInfo(userInfo *UserData) *UserData {
 
 */
 
-func main() {
-	//StudentRegister("zlb",19) // 返回指针变量逃逸
-	//F()
-	//Slice()
-	dynamic()
-	var info UserData
-	info.Name = "WilburXu"
-	_ = GetUserInfo(info)
+type demo1 struct {
+	a int8
+	b int16
+	c int32
+}
 
+type demo2 struct {
+	a int8
+	c int32
+	b int16
+}
+
+func main() {
+	/*t := time.After(time.Second * 3)
+	fmt.Printf("t type=%T\n", t)
+	//阻塞3秒
+	fmt.Println("t=", <-t)*/
+	/*	a :=[]int{1,2,3,4,5,6,7,8}
+		fmt.Printf("%v",ZlbSerarch(len(a), func(i int) bool {
+			return a[i] >= 2
+		}))*/
+	fmt.Println(unsafe.Alignof(demo1{}))
+	fmt.Println(unsafe.Alignof(demo2{}))
+
+	fmt.Printf("demo sizeof =%v,demo2 sizeof = %v", unsafe.Sizeof(demo1{}), unsafe.Sizeof(demo2{}))
+}
+
+func ZlbSerarch(n int, f func(int) bool) int {
+
+	i, j := 0, n
+
+	for i < j {
+		h := int(uint(i+j) >> 1)
+		if !f(h) {
+			i = h + 1
+		} else {
+			j = h
+		}
+	}
+	return i
 }
 
 func Fibonacci() func() int {
