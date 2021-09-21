@@ -424,17 +424,24 @@ func oddEvenList(head *ListNode) *ListNode {
 	if head == nil || head.Next == nil {
 		return head
 	}
-	odd := head
-	even := head.Next
-	evenHead := even
-	for even != nil && even.Next != nil {
-		odd.Next = even.Next
-		odd = even.Next
-		even.Next = odd.Next
-		even = even.Next
+	nodeA := &ListNode{Val: -1}
+	nodeB := &ListNode{Val: -1}
+	headA, headB := nodeA, nodeB
+	i := 1
+	for head != nil {
+		if i%2 == 1 {
+			headA.Next = head
+			headA = headA.Next
+		} else {
+			headB.Next = head
+			headB = headB.Next
+		}
+		i++
+		head = head.Next
 	}
-	odd.Next = evenHead
-	return head
+	headB.Next = nil
+	headA.Next = nodeB.Next
+	return nodeA.Next
 }
 
 /**
