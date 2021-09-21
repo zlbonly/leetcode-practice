@@ -13,22 +13,29 @@ type ListNode struct {
 输入: 1->2->3->4->5->NULL
 输出: 5->4->3->2->1->NULL
 
-在遍历链表时，将当前节点的 next 指针改为指向前一个节点。由于节点没有引用其前一个节点，因此必须事先存储其前一个节点。在更改引用之前，还需要存储后一个节点。最后返回新的头引用。
+在遍历链表时，将当前节点的 next 指针改为指向前一个节点。
+由于节点没有引用其前一个节点，因此必须事先存储其前一个节点。
+在更改引用之前，还需要存储后一个节点。最后返回新的头引用。
 
 复杂度分析
 时间复杂度：O(n)，其中 nn 是链表的长度。需要遍历链表一次。
 空间复杂度：O(1)
-pre + curr
+
+链表反转解题步骤：
+1、定一个空头节点prev
+2、存储下一个next := head.next 节点
+3、head.next 指向空prev节点
+4、head 赋值给prev节点
+5、head 节点下移
 */
 
 func reverseList(head *ListNode) *ListNode {
 	var prev *ListNode
-	curr := head
-	for curr != nil {
-		next := curr.Next
-		curr.Next = prev
-		prev = curr
-		curr = next
+	for head != nil {
+		next := head.Next
+		head.Next = prev
+		prev = head
+		head = next
 	}
 	return prev
 }
@@ -87,6 +94,7 @@ func reverseBetween(head *Node, left int, right int) *Node {
 }
 
 /**
+
 	5、合并两个排序的链表
 	输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是递增排序的。
 示例1：
@@ -228,14 +236,14 @@ func swapPairs(head *Node) *Node {
 参考解题连接：https://leetcode-cn.com/problems/partition-list/solution/fen-ge-lian-biao-by-leetcode-solution-7ade/
 */
 
-func partition(head *Node, x int) *Node {
-	small := &Node{}
-	large := &Node{}
+func partition(head *ListNode, x int) *ListNode {
+	small := &ListNode{}
+	large := &ListNode{}
 	smallHead := small
 	largeHead := large
 
 	for head != nil {
-		if head.Data.(int) < x {
+		if head.Val < x {
 			small.Next = head
 			small = small.Next
 		} else {
@@ -244,7 +252,7 @@ func partition(head *Node, x int) *Node {
 		}
 		head = head.Next
 	}
-	largeHead = nil
+	large.Next = nil
 	small.Next = largeHead.Next
 	return smallHead.Next
 }
@@ -259,14 +267,20 @@ func partition(head *Node, x int) *Node {
 */
 
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	nodes := []*ListNode{}
-	dummy := &ListNode{0, head}
-	for node := dummy; node != nil; node = node.Next {
-		nodes = append(nodes, node)
+	dumpyHead := &ListNode{Val: -1}
+	dumpyHead.Next = head
+	cur := dumpyHead
+	length := 0
+	for head != nil {
+		head = head.Next
+		length++
 	}
-	prev := nodes[len(nodes)-1-n]
-	prev.Next = prev.Next.Next
-	return dummy.Next
+
+	for i := 0; i < length-n; i++ {
+		cur = cur.Next
+	}
+	cur.Next = cur.Next.Next
+	return dumpyHead.Next
 }
 
 /*
@@ -441,6 +455,9 @@ func oddEvenList(head *ListNode) *ListNode {
 时间复杂度：O(n)O(n)，其中 nn 指的是链表的大小。
 空间复杂度：O(1)O(1)，我们是一个接着一个的改变指针，我们在堆栈上的堆栈帧不超过 O(1)O(1)。
 
+快指针走到末尾，慢指针刚好到中间。其中慢指针将前半部分反转。然后比较。 思路果然666
+
+
 解题步骤：
 	1、判断极端case
 	2、使用快慢指针找到链表节点
@@ -556,13 +573,16 @@ func hasCycle(head *ListNode) bool {
 	if head == nil || head.Next == nil {
 		return false
 	}
-	slow, fast := head, head.Next
-	for fast != slow {
+	slow, fast := head, head
+	for {
 		if fast == nil || fast.Next == nil {
 			return false
 		}
 		slow = slow.Next
 		fast = fast.Next.Next
+		if slow == fast {
+			return true
+		}
 	}
 	return true
 }
@@ -602,24 +622,28 @@ f = s + nb (相遇时，刚好多走了n圈）
 空间复杂度 O(1)：双指针使用常数大小的额外空间。
 
 */
+
 func detectCycle(head *ListNode) *ListNode {
-	fast, slow := head, head
-	for fast != nil {
-		slow = slow.Next
-		if fast.Next == nil {
+	fast := head
+	slow := head
+	for {
+		if fast == nil || fast.Next == nil {
 			return nil
 		}
 		fast = fast.Next.Next
+		slow = slow.Next
 		if slow == fast {
-			temp := head
-			for temp != slow {
-				temp = temp.Next
-				slow = slow.Next
-			}
-			return temp
+			break
 		}
 	}
-	return nil
+	fast = head
+	for {
+		if fast == slow {
+			return fast
+		}
+		fast = fast.Next
+		slow = slow.Next
+	}
 }
 
 /**
@@ -644,6 +668,12 @@ func detectCycle(head *ListNode) *ListNode {
 	空间复杂度：O(m)，其中 m 是链表headA 的长度。需要使用哈希集合存储链表 headA 中的全部节点。
 
 3、双指针
+解题步骤：
+	1、设长链表A长度为LA，短链表长度LB；
+	2、由于速度相同，则在长链表A走完LA长度时，短链表B已经反过头在A上走了LA-LB的长度，剩余要走的长度为LA-(LA-LB) = LB；
+	3、之后长链表A要反过头在B上走，剩余要走的长度也是LB；
+	4、也就是说目前两个链表“对齐”了。因此，接下来遇到的第一个相同节点便是两个链表的交点。
+
 	复杂度分析
 	时间复杂度：O(m+n)其中 m 和 n 是分别是链表 headA 和 headB 的长度。两个指针同时遍历两个链表，每个指针遍历两个链表各一次。
 	空间复杂度：O(1)
