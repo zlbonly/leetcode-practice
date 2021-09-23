@@ -420,3 +420,21 @@ func quickMul(x float64, n int) float64 {
 	}
 	return y * y * x
 }
+
+// 给定一个整数 num，将其转化为 7 进制，并以字符串形式输出。
+func convertToBase7(num int) string {
+	if num == 0 {
+		return "0"
+	}
+	if num > 0 {
+		return dfs(num)
+	}
+	return "-" + dfs(-num)
+}
+
+func dfs(num int) string {
+	if num == 0 {
+		return ""
+	}
+	return dfs(num/2) + fmt.Sprintf("%d", num%2)
+}
