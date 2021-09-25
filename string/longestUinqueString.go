@@ -12,6 +12,7 @@ func main() {
 	// 4、最长公共子序列（两个字符串）
 	// 5、题目描述：两数子和（I）
 	// 6、三数之和
+	// 7、最长回文子序列（不连续）
 }
 
 /*
@@ -356,6 +357,93 @@ func threeSum(nums []int) [][]int {
 		}
 	}
 	return ret
+}
+
+/***
+7、最长回文子序列
+	输入：s = "bbbab"
+输出：4
+解释：一个可能的最长回文子序列为 "bbbb" 。
+
+注意： 最长回文子串 不同的是，回文子序列不要求连续。
+题目描述：给你一个字符串 s ，找出其中最长的回文子序列，并返回该序列的长度。
+子序列定义为：不改变剩余字符顺序的情况下，删除某些字符或者不删除任何字符形成的一个序列。
+解题思路： 动态规划
+1、于一个子序列而言，如果它是回文子序列，并且长度大于 2，那么将它首尾的两个字符去除之后，它仍然是个回文子序列。因此可以用动态规划的方法计算给定字符串的最长回文子序列
+2、用 dp[i][j] 表示字符串 s 的下标范围 [i, j] 内的最长回文子序列的长度。假设字符串 s 的长度为 n，则只有当 0≤i≤j<n 时，才会有 dp[i][j]>0，否则 dp[i][j]=0。
+3、由于任何长度为 1 的子序列都是回文子序列，因此动态规划的边界情况是，对任意0≤i<n，都有 dp[i][i]=1。
+4、当 i<j 时，计算 dp[i][j] 需要分别考虑 s[i] 和 s[j] 相等和不相等的情况：
+	1、如果 s[i]=s[j]，则首先得到 s 的下标范围 [i+1,j−1] 内的最长回文子序列，然后在该子序列的首尾分别添加 s[i] 和 s[j]，即可得到 s 的下标范围 [i, j] 内的最长回文子序列，因此 dp[i][j]=dp[i+1][j−1]+2；
+	2、如果 s[i]和s[j]不相等，则 s[i] 和 s[j] 不可能同时作为同一个回文子序列的首尾，因此 dp[i][j]=max(dp[i+1][j],dp[i][j−1])。
+	3、由于状态转移方程都是从长度较短的子序列向长度较长的子序列转移，因此需要注意动态规划的循环顺序
+			最终得到 dp[0][n−1] 即为字符串 ss 的最长回文子序列的长度。
+
+*/
+func longestPalindromeSubseq(s string) int {
+	n := len(s)
+	dp := make([][]int, n)
+	for i := range dp {
+		dp[i] = make([]int, n)
+	}
+	for i := n - 1; i >= 0; i-- {
+		dp[i][i] = 1
+		for j := i + 1; j < n; j++ {
+			if s[i] == s[j] {
+				dp[i][j] = dp[i+1][j-1] + 2
+			} else {
+				dp[i][j] = max(dp[i+1][j], dp[i][j-1])
+			}
+		}
+	}
+	return dp[0][n-1]
+}
+
+/**
+8、最长回文子串
+给你一个字符串 s，找到 s 中最长的回文子串。
+
+注意： 最长回文子串要求一定是连续的。
+
+示例 1：
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+
+暴力破解法：
+暴力求解，列举所有的子串，判断是否为回文串，保存最长的回文串。
+
+时间复杂度：两层 for 循环O(n²），for 循环里边判断是否为回文 O(n），所以时间复杂度为O(n³）。
+空间复杂度：O(1），常数个变量。
+
+
+
+*/
+func longestPalindrome(s string) string {
+	length := len(s)
+	maxLength := 0
+	var ret string
+
+	for i := 0; i < length; i++ {
+		for j := i + 1; j < length; j++ {
+			temp := s[i : j+1]
+			if isPalindromic(temp) && len(temp) > maxLength {
+				maxLength = max(maxLength, len(temp))
+				ret = temp
+			}
+		}
+	}
+	return ret
+}
+
+// 判断是否是回文字符串
+func isPalindromic(s string) bool {
+	length := len(s)
+	for i := 0; i < length/2; i++ {
+		if s[i] != s[length-i-1] {
+			return false
+		}
+	}
+	return true
 }
 
 /**
