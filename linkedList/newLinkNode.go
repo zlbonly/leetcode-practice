@@ -62,40 +62,46 @@ func reverseList2(head *ListNode) *ListNode {
 		1 -> 4 -> 3 -> 2 -> 5
 	输入：head = [1,2,3,4,5], left = 2, right = 4
 	输出：[1,4,3,2,5]
-
-	解题思路：
-		1、我们定义两个指针，分别是 g(guard 守卫)  和 p (ponit) ，我们首先根据方法的参数 m 确定 g 和 p 的位置。
-		将  g 移动到第一个要反转的节点的前面，将 p 移动到第一个 要反转的节点的 位置上 。。
-		2、将p 后面的元素删除，然后添加到g的后面去，也即头插法
-		3、根据 m 和 n 的重复步骤（2）
-		4、返回dummyHead.next
 */
-func reverseBetween(head *Node, left int, right int) *Node {
-	dummyHead := &Node{Data: -1}
-	dummyHead.Next = head
+func reverseBetween(head *ListNode, left int, right int) *ListNode {
+	dumpNode := &ListNode{Val: -1}
+	dumpNode.Next = head
+	pre := dumpNode
 
-	// 初始化指针
-	g := dummyHead
-	p := dummyHead.Next
-
-	// 将指针移到相应的位置
+	// 第一步 从虚拟头节点走 left-1步，来到left节点的前一个节点
 	for i := 0; i < left-1; i++ {
-		g = g.Next
-		p = p.Next
+		pre = pre.Next
 	}
 
-	for i := 0; i < right-left; i++ {
-		removed := p.Next
-		p.Next = p.Next.Next
-		removed.Next = g.Next
-		g.Next = removed
+	// 第2步 从pre再走right-left+1步 来到right节点
+	rightNode := pre
+	for i := 0; i < right-left+1; i++ {
+		rightNode = rightNode.Next
 	}
-	return dummyHead.Next
+
+	// 第三步 切断出一个子链表（截取left ~ right 总节点为一个新链表）
+	betWeenNode := pre.Next
+	curr := rightNode.Next
+
+	// 注意切断链接
+	pre.Next = nil
+	rightNode.Next = nil
+
+	// 第四步，中间的链表子区间进行反转
+	reverseNode := reverseList(betWeenNode)
+
+	// 第五步 把反转后的链表接回到原链表中
+	pre.Next = reverseNode
+	for reverseNode.Next != nil {
+		reverseNode = reverseNode.Next
+	}
+	reverseNode.Next = curr
+	return dumpNode.Next
 }
 
 /**
 
-	5、合并两个排序的链表
+	3、合并两个排序的链表
 	输入两个递增排序的链表，合并这两个链表并使新链表中的节点仍然是递增排序的。
 示例1：
 输入：1->2->4, 1->3->4
@@ -127,7 +133,7 @@ func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
 }
 
 /**
- 6、题目描述 合并k个有序链表
+ 4、题目描述 合并k个有序链表
 解题思路
 将链表拆分为lists[:len(lists)/2]和lists[len(lists)/2:]两部分，
 分别使用mergeKLists进行递归直至lists中只有一个链表时返回，
@@ -150,7 +156,7 @@ func mergeKLists(lists []*ListNode) *ListNode {
 }
 
 /**
-	7、题目
+	5、题目
 输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，
 即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，
 它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。
@@ -181,7 +187,7 @@ func getKthFromEnd(head *ListNode, k int) *ListNode {
 }
 
 /*
-8、题目描述
+6、题目描述
 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
 
@@ -225,7 +231,7 @@ func swapPairs(head *Node) *Node {
 }
 
 /**
-	9 、分割链表
+	7 、分割链表
 	问题描述： 给你一个链表的头节点 head 和一个特定值 x ，请你对链表进行分隔，使得所有 小于 x 的节点都出现在 大于或等于 x 的节点之前。
 		你应当 保留 两个分区中每个节点的初始相对位置。
 
@@ -258,7 +264,7 @@ func partition(head *ListNode, x int) *ListNode {
 }
 
 /***
-	9、删除链表的倒数第 N 个结点
+	8、删除链表的倒数第 N 个结点
 	我们也可以在遍历链表的同时将所有节点依次入栈。根据栈「先进后出」的原则，我们弹出栈的第 nn 个节点就是需要删除的节点，并且目前栈顶的节点就是待删除节点的前驱节点。这样一来，删除操作就变得十分方便了。
 复杂度分析
 时间复杂度：O(L)，其中 L 是链表的长度。
@@ -284,7 +290,7 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 }
 
 /*
-10、题目描述：对链表进行 插入排序
+9、题目描述：对链表进行 插入排序
 
 插入排序的动画演示如上。从第一个元素开始，该链表可以被认为已经部分排序（用黑色表示）。
 每次迭代时，从输入数据中移除一个元素（用红色表示），并原地将其插入到已排好序的链表中。
@@ -717,4 +723,120 @@ func getIntersectionNodeII(headA, headB *ListNode) *ListNode {
 		}
 	}
 	return pa
+}
+
+/**
+20 题目描述删除链表节点
+给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。返回删除后的链表的头节点。
+*/
+func deleteNode(head *ListNode, val int) *ListNode {
+	pre := &ListNode{Val: -1}
+	pre.Next = head
+	cur := pre
+
+	for cur.Next != nil {
+		if cur.Next.Val == val {
+			cur.Next = cur.Next.Next
+		} else {
+			cur = cur.Next
+		}
+	}
+	return pre.Next
+}
+
+/**
+题目描述：删除排序链表中的重复元素
+存在一个按升序排列的链表，给你这个链表的头节点 head ，请你删除所有重复的元素，使每个元素 只出现一次 。返回同样按升序排列的结果链表。
+输入：head = [1,1,2]
+输出：[1,2]
+*/
+func deleteDuplicates(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+
+	cur := head
+	for cur.Next != nil {
+		if cur.Val == cur.Next.Val {
+			cur.Next = cur.Next.Next
+		} else {
+			cur = cur.Next
+		}
+	}
+
+	return head
+}
+
+/**
+题目描述：删除排序链表中的重复元素
+存在一个按升序排列的链表，给你这个链表的头节点 head ，
+请你删除链表中所有存在数字重复情况的节点，只保留原始链表中 没有重复出现 的数字。
+返回同样按升序排列的结果链表。
+
+输入：head = [1,2,3,3,4,4,5]
+输出：[1,2,5]
+*/
+func deleteDuplicatesII(head *ListNode) *ListNode {
+	if head == nil {
+		return nil
+	}
+
+	dummy := &ListNode{0, head}
+
+	cur := dummy
+	for cur.Next != nil && cur.Next.Next != nil {
+		if cur.Next.Val == cur.Next.Next.Val {
+			x := cur.Next.Val
+			for cur.Next != nil && cur.Next.Val == x {
+				cur.Next = cur.Next.Next
+			}
+		} else {
+			cur = cur.Next
+		}
+	}
+
+	return dummy.Next
+}
+
+/**
+题目描述：链表求和
+给定两个用链表表示的整数，每个节点包含一个数位。这些数位是反向存放的，也就是个位排在链表首部。
+编写函数对这两个整数求和，并用链表形式返回结果。
+示例 反向存放
+	输入：(7 -> 1 -> 6) + (5 -> 9 -> 2)，即617 + 295
+	输出：2 -> 1 -> 9，即912
+
+解题思路：
+反向存放：从两个链表头开始相加，处理进位（单位大于10的问题），创建新的链表节点，
+
+正向存放：
+示例：
+	输入：(6 -> 1 -> 7) + (2 -> 9 -> 5)，即617 + 295
+	输出：9 -> 1 -> 2，即912
+解题思路：
+	1、利用栈先进后出、计算每一位的和，累加过程处理与反向一致，每一步处理链接节点摆放位置不同
+	2、先将输入链表反转，求完和之后在翻转一次。从而使得最终的和也满足正向存放。
+*/
+func addTwoNumbersI(l1 *ListNode, l2 *ListNode) *ListNode {
+	dumpHead := &ListNode{Val: -1}
+	cur := dumpHead
+	carry := 0
+	sum := 0
+	for l1 != nil || l2 != nil || carry > 0 {
+		sum = 0
+		if l1 != nil {
+			sum += l1.Val
+			l1 = l1.Next
+		}
+		if l2 != nil {
+			sum += l2.Val
+			l2 = l2.Next
+		}
+		sum += carry
+		temp := &ListNode{Val: sum % 10}
+		carry = sum / 10
+		cur.Next = temp
+		cur = cur.Next
+	}
+	return dumpHead.Next
 }

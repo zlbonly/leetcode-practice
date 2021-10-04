@@ -375,11 +375,47 @@ func isCompleteTree(root *TreeNode) bool {
 	return true
 }
 
-/**
-验证完全二叉树
-对于一个完全二叉树，层序遍历的过程中遇到第一个空节点之后不应该再出现非空节点
-
+/*
+	题目描述13：二叉搜索树转成双向链表
+	输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
+	参考链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
 */
+
+var pre *TreeNode
+var head *TreeNode
+
+// 生成双向链表
+func treeToDoubleList(root *TreeNode) *TreeNode {
+	if root == nil {
+		return nil
+	}
+
+	pre = nil
+	head = nil
+	inOrder(root)
+
+	pre.Right = head
+	head.Left = pre
+
+	return head
+}
+
+// 中序遍历
+func inOrder(root *TreeNode) {
+	if root == nil {
+		return
+	}
+	inOrder(root.Left)
+
+	if pre == nil {
+		head = root
+	} else {
+		pre.Right = root
+		root.Left = pre
+	}
+	pre = root
+	inOrder(root.Right)
+}
 
 /**
  12、题目描述：路径总和 I
