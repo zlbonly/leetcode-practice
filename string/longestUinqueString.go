@@ -13,6 +13,12 @@ func main() {
 	// 5、题目描述：两数子和（I）
 	// 6、三数之和
 	// 7、最长回文子序列（不连续）
+	// 8、最长回文子串
+	// 9、删掉一个元素以后全为 1 的最长子数组
+	// 10、和为s的连续正数序列
+	// 11、最长连续递增序列
+	// 12、最长递增子序列
+
 }
 
 /*
@@ -414,9 +420,6 @@ func longestPalindromeSubseq(s string) int {
 
 时间复杂度：两层 for 循环O(n²），for 循环里边判断是否为回文 O(n），所以时间复杂度为O(n³）。
 空间复杂度：O(1），常数个变量。
-
-
-
 */
 func longestPalindrome(s string) string {
 	length := len(s)
@@ -447,7 +450,7 @@ func isPalindromic(s string) bool {
 }
 
 /**
-题目描述： 删掉一个元素以后全为 1 的最长子数组
+题目描述：9、 删掉一个元素以后全为 1 的最长子数组
 给你一个二进制数组 nums ，你需要从中删掉一个元素。请你在删掉元素的结果数组中，返回最长的且只包含 1 的非空子数组的长度。如果不存在这样的子数组，请返回 0
 提示 1：
 输入：nums = [1,1,0,1]
@@ -488,7 +491,7 @@ func longestSubarray(nums []int) int {
 }
 
 /**
-题目描述： 和为s的连续正数序列
+题目描述：10、 和为s的连续正数序列
 输入一个正整数 target ，输出所有和为 target 的连续正整数序列（至少含有两个数）。
 序列内的数字由小到大排列，不同序列按照首个数字从小到大排列。
 
@@ -526,22 +529,85 @@ func findContinuousSequence(target int) [][]int {
 }
 
 /**
-1、移除元素
-	给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
-	不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
-	元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+	11、最长连续递增序列
+	给定一个未经排序的整数数组，找到最长且 连续递增的子序列，并返回该序列的长度。
+
+	示例 1：
+	输入：nums = [1,3,5,4,7]
+	输出：3
+	解释：最长连续递增序列是 [1,3,5], 长度为3。
+	尽管 [1,3,5,7] 也是升序的子序列, 但它不是连续的，因为 5 和 7 在原数组里被 4 隔开。
+
+	示例 2：
+	输入：nums = [2,2,2,2,2]
+	输出：1
+	解释：最长连续递增序列是 [2], 长度为1。
+
+
+链接：https://leetcode-cn.com/problems/longest-continuous-increasing-subsequence
 */
-func removeElement(nums []int, val int) int {
-	left := 0
-	for _, v := range nums { // v 即 nums[right]
-		if v != val {
-			nums[left] = v
-			left++
-		}
+func findLengthOfLCIS(nums []int) int {
+	if len(nums) == 0 || len(nums) == 1 {
+		return len(nums)
 	}
-	return left
+	dp, res := make([]int, len(nums)), 0
+	for i := 0; i < len(nums); i++ {
+		dp[i] = 1
+	}
+
+	for i := 1; i < len(nums); i++ {
+		if nums[i-1] < nums[i] {
+			dp[i] = dp[i-1] + 1
+		}
+
+		res = max(res, dp[i])
+
+	}
+	return res
 }
 
+/**
+	12、最长递增子序列
+		给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
+
+	示例 1：
+		输入：nums = [10,9,2,5,3,7,101,18]
+		输出：4
+		解释：最长递增子序列是 [2,3,7,101]，因此长度为 4
+
+	示例 1：
+	输入：nums = [0,1,0,3,2,3]
+		输出：4
+
+解法一：动态规划
+
+	dp[i] 的值代表 nums 以 nums[i]结尾的最长子序列长度。
+	转移方程： dp[i] = max(dp[i], dp[j] + 1) for j in [0, i)。
+	1、当 nums[i] > nums[j]时： nums[i]nums[i] 可以接在 nums[j]之后（此题要求严格递增），
+	此情况下最长上升子序列长度为 dp[j]+1 ；
+	2、当 nums[i] <= nums[j] 时： nums[i]nums[i] 无法接在 nums[j]之后，此情况上升子序列不成立，跳过。
+
+	链接：https://leetcode-cn.com/problems/longest-increasing-subsequence/
+*/
+func lengthOfLIS(nums []int) int {
+
+	if len(nums) == 0 {
+		return 0
+	}
+	dp, res := make([]int, len(nums)), 0
+
+	for i := 0; i < len(nums); i++ {
+		dp[i] = 1
+		for j := 0; j < i; j++ {
+
+			if nums[j] < nums[i] {
+				dp[i] = max(dp[i], dp[j]+1)
+			}
+		}
+		res = max(res, dp[i])
+	}
+	return res
+}
 func max(a int, b int) int {
 	if a > b {
 		return a
