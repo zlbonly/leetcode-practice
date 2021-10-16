@@ -11,6 +11,27 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
+/**
+1、树的前序遍历
+2、树的中序遍历
+3、树的后序遍历
+4、树的深度
+5、判断两个树是否相同
+6、重建二叉树
+7、二叉树的层次遍历
+8、二叉树的左视图和右视图
+9、二叉树的锯齿形层序遍历
+10、翻转二叉树
+11、二叉树的最近公共祖先
+12、N叉树层次遍历
+13、二叉树的完整性校验（校验完全二叉树）
+14、校验搜索二叉树
+15、二叉树转双向链表
+16、二叉树路径总和I
+17、二叉树路径综和II
+18、二叉树最大路径
+*/
+
 /*
 	1、前序遍历 根-左-右
 */
@@ -250,25 +271,23 @@ func zigzagLevelOrder(root *TreeNode) [][]int {
 }
 
 /**
-10、
-	1、题目描述： 翻转二叉树
+10、翻转二叉树 （镜像二叉树）
+	1、题目描述： 翻转二叉树 （镜像二叉树）
 	2、解题方案： 使用递归
-	反转一颗空树结果还是一颗空树。对于一颗根为 rr，左子树为 \mbox{right}，
-	右子树为 \mbox{left} 的树来说，它的反转树是一颗根为 rr，
-	左子树为 \mbox{right} 的反转树，右子树为 \mbox{left} 的反转树的树。
+		https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/
    3、算法分析
 	既然树中的每个节点都只被访问一次，那么时间复杂度就是 O(n)，
 	其中 n 是树中节点的个数。在反转之前，不论怎样我们至少都得访问每个节点至少一次，因此这个问题无法做地比 O(n)更好了。
 */
 
-func invertTreeNode(root *TreeNode) *TreeNode {
+func invertTree(root *TreeNode) *TreeNode {
 	if root == nil {
 		return nil
 	}
-	right := invertTreeNode(root.Right)
-	left := invertTreeNode(root.Left)
-	root.Right = right
-	root.Left = left
+	right := invertTree(root.Right)
+	left := invertTree(root.Left)
+	root.Left = right
+	root.Right = left
 	return root
 }
 
@@ -318,7 +337,7 @@ func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
 }
 
 /**
-N叉树层次遍历
+12 题目描述：N叉树层次遍历
 */
 func levelOrderN(root *TreeNode) [][]int {
 	resut := make([][]int, 0)
@@ -347,14 +366,21 @@ func levelOrderN(root *TreeNode) [][]int {
 }
 
 /**
-	二叉树的完整性校验
-	给定一个二叉树，确定它是否是一个完全二叉树。
-isCompleteTree
-完全二叉树是指最后一层左边是满的，右边可能慢也不能不满，然后其余层都是满的，根据这个特性，利用层遍历。如果我们当前遍历到了NULL结点，如果后续还有非NULL结点，说明是非完全二叉树。
-参考链接：
-		https://leetcode-cn.com/problems/check-completeness-of-a-binary-tree/solution/ceng-xu-bian-li-pan-duan-ji-ke-jie-jue-b-xcml/
-*/
+13、题目描述：二叉树的完整性校验
+给定一个二叉树，确定它是否是一个完全二叉树。
+百度百科中对完全二叉树的定义如下：
+若设二叉树的深度为 h，除第 h 层外，其它各层 (1～h-1) 的结点数都达到最大个数，第 h 层所有的结点都连续集中在最左边，这就是完全二叉树。（注：第 h 层可能包含 1~ 2h 个节点。）
 
+输入：[1,2,3,4,5,6]
+输出：true
+解释：最后一层前的每一层都是满的（即，结点值为 {1} 和 {2,3} 的两层），且最后一层中的所有结点（{4,5,6}）都尽可能地向左。
+
+
+解题思路：
+完全二叉树是指最后一层左边是满的，右边可能满也不能不满，然后其余层都是满的，根据这个特性，利用层遍历。如果我们当前遍历到了NULL结点，如果后续还有非NULL结点，说明是非完全二叉树。
+参考链接：
+	https://leetcode-cn.com/problems/check-completeness-of-a-binary-tree/solution/ceng-xu-bian-li-pan-duan-ji-ke-jie-jue-b-xcml/
+*/
 func isCompleteTree(root *TreeNode) bool {
 	queue := []*TreeNode{root}
 	lastIsNil := false
@@ -375,8 +401,40 @@ func isCompleteTree(root *TreeNode) bool {
 	return true
 }
 
+/**
+	14、验证二叉搜索树
+	给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+	有效 二叉搜索树定义如下：
+		节点的左子树只包含 小于 当前节点的数。
+		节点的右子树只包含 大于 当前节点的数。
+		所有左子树和右子树自身必须也是二叉搜索树。
+
+	输入：root = [2,1,3]
+	输出：true
+
+	解题思路：
+		1、搜索二叉树的中序遍历是一个 升序的数组，可以借助这一个特性，来判断是不是 搜索二叉树。
+ 参考链接：https://leetcode-cn.com/problems/validate-binary-search-tree/submissions/
+*/
+
+var preValue = math.MinInt32
+
+func isValidBST(root *TreeNode) bool {
+	if root == nil {
+		return true
+	}
+	if !isValidBST(root.Left) {
+		return false
+	}
+	if root.Val <= preValue {
+		return false
+	}
+	preValue = root.Val
+	return isValidBST(root.Right)
+}
+
 /*
-	题目描述13：二叉搜索树转成双向链表
+	题目描述15：二叉搜索树转成双向链表
 	输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的循环双向链表。要求不能创建任何新的节点，只能调整树中节点指针的指向。
 	参考链接：https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/
 */
@@ -418,7 +476,7 @@ func inOrder(root *TreeNode) {
 }
 
 /**
- 12、题目描述：路径总和 I
+ 16、题目描述：路径总和 I
 给定一个二叉树和一个目标和，判断该树中是否存在根节点到叶子节点的路径，这条路径上所有节点值相加等于目标和。
 说明: 叶子节点是指没有子节点的节点。
 
@@ -442,7 +500,7 @@ func hasPathSum(root *TreeNode, sum int) bool {
 }
 
 /**
-13、路径总和II
+17、路径总和II
 给你二叉树的根节点 root 和一个整数目标和 targetSum ，找出所有 从根节点到叶子节点 路径总和等于给定目标和的路径。
 
 叶子节点 是指没有子节点的节点
@@ -492,42 +550,7 @@ func dfsPathSumII(root *TreeNode, targetSum int, path []int, res *[][]int) {
 }
 
 /**
-
-给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
-解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
-
-示例 1：
-
-输入：nums = [1,2,3]
-输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
-
-解题连接：https://mp.weixin.qq.com/s/g5uvxi1lyxmWC4LtP0Bdlw
-*/
-func subsets(nums []int) [][]int {
-	res := make([][]int, 0)
-	current := []int{}
-
-	dfsSubsets(nums, 0, current, &res)
-	return res
-}
-
-func dfsSubsets(nums []int, k int, current []int, res *[][]int) {
-	if k == len(nums) {
-		temp := make([]int, len(current))
-		copy(temp, current)
-		*res = append(*res, current)
-		return
-	}
-	// 不选择第k个元素
-	dfsSubsets(nums, k+1, current, res)
-	// 选择第k个元素
-	current = append(current, nums[k])
-	dfsSubsets(nums, k+1, current, res)
-	current = current[:len(current)-1]
-}
-
-/**
-124. 二叉树中的最大路径和
+18. 二叉树中的最大路径和
 路径 被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。同一个节点在一条路径序列中 至多出现一次 。该路径 至少包含一个 节点，且不一定经过根节点。
 
 路径和 是路径中各节点值的总和。
@@ -635,6 +658,41 @@ func dfsHelper(root *TreeNode, maxSum *int) int {
 	//自底向上的分治,直到到了最底层，才开始计算并返回答案
 	*maxSum = max(*maxSum, root.Val+leftSum+rightSum)
 	return max(root.Val+leftSum, root.Val+rightSum)
+}
+
+/**
+
+给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+
+示例 1：
+
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+
+解题连接：https://mp.weixin.qq.com/s/g5uvxi1lyxmWC4LtP0Bdlw
+*/
+func subsets(nums []int) [][]int {
+	res := make([][]int, 0)
+	current := []int{}
+
+	dfsSubsets(nums, 0, current, &res)
+	return res
+}
+
+func dfsSubsets(nums []int, k int, current []int, res *[][]int) {
+	if k == len(nums) {
+		temp := make([]int, len(current))
+		copy(temp, current)
+		*res = append(*res, current)
+		return
+	}
+	// 不选择第k个元素
+	dfsSubsets(nums, k+1, current, res)
+	// 选择第k个元素
+	current = append(current, nums[k])
+	dfsSubsets(nums, k+1, current, res)
+	current = current[:len(current)-1]
 }
 
 func max(a, b int) int {
