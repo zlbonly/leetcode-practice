@@ -1,5 +1,26 @@
 package main
 
+/**
+1、 链表翻转（非递归和非递归）
+2、 链表翻转（从指定位置）
+3、 合并两个有序链表
+4、 合并N个有序链表
+5、 链表中倒数第k个节点
+6、 两两交换链表中的节点
+7、 分割链表
+8、 删除链表的倒数第 N 个结点
+9、 对链表进行插入排序
+10、链表的中间结点
+11、奇偶链表
+12、链表是否为回文链表
+13、重排链表
+14、是否有环
+15、环入口
+16、相交链表节点
+17、删除排序链表中的重复元素
+18、删除排序链表中的重复元素II（只保留没有出现过的元素）
+19、链表求和
+*/
 // 每个结点包括两个部分： 一个是存储数据元素的数据域，另一个是存储下一个结点地址的指针域。
 // 头结点的数据域可以不存储任何信息，头结点的指针域存储指向第一个结点的指针（即第一个元素结点的存储位置）。头结点的作用是使所有链表（包括空表）的头指针非空，并使对单链表的插入、删除操作不需要区分是否为空表或是否在第一个位置进行，从而与其他位置的插入、删除操作一致。
 type ListNode struct {
@@ -54,7 +75,7 @@ func reverseList2(head *ListNode) *ListNode {
 }
 
 /*
-	4、链表反转II
+	2、链表反转II
 	题目描述：
 			给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表
 	示例1：
@@ -156,7 +177,7 @@ func mergeKLists(lists []*ListNode) *ListNode {
 }
 
 /**
-	5、题目
+	5、题目 链表中倒数第k个节点
 输入一个链表，输出该链表中倒数第k个节点。为了符合大多数人的习惯，本题从1开始计数，
 即链表的尾节点是倒数第1个节点。例如，一个链表有6个节点，从头节点开始，
 它们的值依次是1、2、3、4、5、6。这个链表的倒数第3个节点是值为4的节点。
@@ -187,7 +208,7 @@ func getKthFromEnd(head *ListNode, k int) *ListNode {
 }
 
 /*
-6、题目描述
+6、题目描述  两两交换链表中的节点
 给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
 你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
 
@@ -290,7 +311,7 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 }
 
 /*
-9、题目描述：对链表进行 插入排序
+9、题目描述：对链表进行插入排序
 
 插入排序的动画演示如上。从第一个元素开始，该链表可以被认为已经部分排序（用黑色表示）。
 每次迭代时，从输入数据中移除一个元素（用红色表示），并原地将其插入到已排好序的链表中。
@@ -348,7 +369,7 @@ func insertionSortList(head *ListNode) *ListNode {
 }
 
 /**
-11、
+10、链表的中间结点
 给定一个带有头结点 head 的非空单链表，返回链表的中间结点。
 如果有两个中间结点，则返回第二个中间结点。
 示例 1：
@@ -386,7 +407,7 @@ func middleNode(head *ListNode) *ListNode {
 }
 
 /*
-13、题目描述：奇偶链表
+11、题目描述：奇偶链表
 给定一个单链表，把所有的奇数节点和偶数节点分别排在一起。请注意，
 这里的奇数节点和偶数节点指的是节点编号的奇偶性，而不是节点的值的奇偶性。
 
@@ -451,7 +472,7 @@ func oddEvenList(head *ListNode) *ListNode {
 }
 
 /**
-14、请判断一个链表是否为回文链表。
+12、链表是否为回文链表
 
 示例 1:
 
@@ -503,7 +524,7 @@ func isPalindrome(head *ListNode) bool {
 
 /*
 
-15、问题描述：  重排链表
+13、问题描述：  重排链表
 给定一个单链表 L：L0→L1→…→Ln-1→Ln ，
 将其重新排列后变为： L0→Ln→L1→Ln-1→L2→Ln-2→…
 
@@ -562,7 +583,7 @@ func reorderList(head *ListNode) {
 }
 
 /**
-	16、判断是否有环 （面试时，可以直接给面试官讲 获取环的入口 ，因为肯定要先判断是否有环）
+	14、判断是否有环 （面试时，可以直接给面试官讲 获取环的入口 ，因为肯定要先判断是否有环）
 给定一个链表，判断链表中是否有环。
 为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
 示例 1：
@@ -601,7 +622,7 @@ func hasCycle(head *ListNode) bool {
 }
 
 /**
-18、环的入口
+15、环的入口
 题解链接：
 https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/linked-list-cycle-ii-kuai-man-zhi-zhen-shuang-zhi-/
  	环行链表入口节点：
@@ -660,7 +681,7 @@ func detectCycle(head *ListNode) *ListNode {
 }
 
 /**
-19. 相交链表
+16. 相交链表
 面试的时候可以先询问面试官 要的时间复杂度。然后给出这两种方案。
 给你两个单链表的头节点 headA 和 headB ，请你找出并返回两个单链表相交的起始节点。如果两个链表没有交点，返回 null 。
 题目链接：https://leetcode-cn.com/problems/intersection-of-two-linked-lists
@@ -726,26 +747,7 @@ func getIntersectionNodeII(headA, headB *ListNode) *ListNode {
 }
 
 /**
-20 题目描述删除链表节点
-给定单向链表的头指针和一个要删除的节点的值，定义一个函数删除该节点。返回删除后的链表的头节点。
-*/
-func deleteNode(head *ListNode, val int) *ListNode {
-	pre := &ListNode{Val: -1}
-	pre.Next = head
-	cur := pre
-
-	for cur.Next != nil {
-		if cur.Next.Val == val {
-			cur.Next = cur.Next.Next
-		} else {
-			cur = cur.Next
-		}
-	}
-	return pre.Next
-}
-
-/**
-题目描述：删除排序链表中的重复元素
+17、题目描述：删除排序链表中的重复元素
 存在一个按升序排列的链表，给你这个链表的头节点 head ，请你删除所有重复的元素，使每个元素 只出现一次 。返回同样按升序排列的结果链表。
 输入：head = [1,1,2]
 输出：[1,2]
@@ -768,7 +770,7 @@ func deleteDuplicates(head *ListNode) *ListNode {
 }
 
 /**
-题目描述：删除排序链表中的重复元素
+18、题目描述：删除排序链表中的重复元素
 存在一个按升序排列的链表，给你这个链表的头节点 head ，
 请你删除链表中所有存在数字重复情况的节点，只保留原始链表中 没有重复出现 的数字。
 返回同样按升序排列的结果链表。
@@ -782,7 +784,6 @@ func deleteDuplicatesII(head *ListNode) *ListNode {
 	}
 
 	dummy := &ListNode{0, head}
-
 	cur := dummy
 	for cur.Next != nil && cur.Next.Next != nil {
 		if cur.Next.Val == cur.Next.Next.Val {
