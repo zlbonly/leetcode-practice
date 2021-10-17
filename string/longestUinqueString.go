@@ -504,31 +504,35 @@ demo：
 
 解题思路：findContinuousSequence 及其注释
 
+	滑动窗口：
+	1、当窗口的和小于 target 的时候，窗口的和需要增加，所以要扩大窗口，窗口的右边界向右移动
+	2、当窗口的和大于 target 的时候，窗口的和需要减少，所以要缩小窗口，窗口的左边界向右移动
+	3、当窗口的和恰好等于 target 的时候，我们需要记录此时的结果。设此时的窗口为 [i, j)，
+		那么我们已经找到了一个 i 开头的序列，也是唯一一个 i 开头的序列，
+		接下来需要找 i+1i+1 开头的序列，所以窗口的左边界要向右移动
 */
 
 func findContinuousSequence(target int) [][]int {
-
-	// plow，phigh 两个起点，相当于动态窗口的两边，根据其窗口内的值来确定窗口的位置和大小
-	plow, phigh, cur := 1, 2, 0
-	result := make([][]int, 0)
-	for plow < phigh {
-		// 由于是连续的，差为1的等差序列，那么求和公式（a0 + an）*n /2
-		cur = (plow + phigh) * (phigh - plow + 1) / 2
-		// 相等，那么将窗口范围内的所有数添加进结果集。
-		if cur == target {
+	i, j, sum := 0, 0, 0
+	res := make([][]int, 0)
+	for i <= target/2 {
+		if sum < target {
+			sum += j
+			j++
+		} else if sum > target {
+			sum -= i
+			i++
+		} else {
 			temp := make([]int, 0)
-			for i := plow; i <= phigh; i++ {
-				temp = append(temp, i)
+			for k := i; k < j; k++ {
+				temp = append(temp, k)
 			}
-			result = append(result, temp)
-			plow++
-		} else if cur < target { // 如果当前窗口内的值和小于target,那么右边窗口移动一下
-			phigh++
-		} else { // 如果当前窗口内的值和大于sum，那么左边的窗口移动一下
-			plow++
+			res = append(res, temp)
+			sum -= i
+			i++
 		}
 	}
-	return result
+	return res
 }
 
 /**
