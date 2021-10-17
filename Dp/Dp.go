@@ -165,11 +165,11 @@ func maxProfit2(prices []int) int {
   的状态转移方程即为： buy1 = max(buy1[i-1] -prices[i])
 	2、对于sell1而言 在第 i 天我们可以不进行任何操作，保持不变，也可以在只进行过一次买操作的前提下以 prices[i] 的价格卖出股票，
 	那么sell1的状态转移方程为：
-		sell1 = max(sell1[i-1],buy1[i-1]+price[i-1=])
+		sell1 = max(sell1[i-1],buy1[i-1]+price[i-1])
 
 	同理得 buy2 和 sell2
 			buy2 = max(buy2[i-1],sell1[i-1]-price[i])
-			sell2 = max(sell2[i-1]+buy2[i-1]+price[i])
+			sell2 = max(sell2[i-1],buy2[i-1]+price[i])
 
 		解题链接：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/solution/mai-mai-gu-piao-de-zui-jia-shi-ji-iii-by-wrnt/
 */

@@ -85,7 +85,8 @@ func transfer(num int) string {
 	chinese := ""
 	//注意这里是倒序的
 	for i := n - 1; i >= 0; i-- {
-		chinese = fmt.Sprintf("%s%s%s", chinese, chineseNum[listNum[i]], chineseMap[i])
+		chinese = fmt.Sprintf(
+			"%s%s%s", chinese, chineseNum[listNum[i]], chineseMap[i])
 	}
 	//注意替换顺序
 	for {
