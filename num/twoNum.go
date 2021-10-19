@@ -438,3 +438,111 @@ func dfs(num int) string {
 	}
 	return dfs(num/2) + fmt.Sprintf("%d", num%2)
 }
+
+/**
+剑指 Offer II 076. 数组中的第 k ⼤大的数字
+给定整数数组 nums 和整数 k，请返回数组中第 k 个最⼤大的元素。
+请注意，你需要找的是数组排序后的第 k 个最⼤大的元素，⽽而不不是第 k 个不不同的元素。
+示例例 1:
+输⼊入: [3,2,1,5,6,4] 和 k = 2 输出: 5
+*/
+func findKthLargest(nums []int, k int) int { // 1、先排序 quickSort(nums,0,len(nums)-1)
+	// 2、取出第K⼤大的元素
+	return nums[len(nums)-k]
+}
+func quickSort(nums []int, left int, right int) {
+	if left >= right {
+		return
+	}
+	i, j := left, right
+	pivot := nums[(left+right)/2]
+	for i <= j {
+		for nums[i] < pivot {
+			i++
+		}
+		for nums[j] > pivot {
+			j--
+		}
+		if i <= j {
+			nums[i], nums[j] = nums[j], nums[i]
+			i++
+			j--
+		}
+	}
+	quickSort(nums, left, j)
+	quickSort(nums, i, right)
+}
+
+/**
+88. 合并两个有序数组
+给你两个按 ⾮非递减顺序 排列列的整数数组 nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数⽬目。 请你 合并 nums2 到 nums1 中，使合并后的数组同样按 ⾮非递减顺序 排列列。 注意:最终，合并后数组不不应由函数返回，⽽而是存储在数组 nums1 中。为了了应对这种情况，nums1 的初始⻓长度为 m + n，其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略略。nums2 的⻓长度为 n 。
+示例例 1:
+输⼊入:nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3 输出:[1,2,2,3,5,6]
+解释:需要合并 [1,2,3] 和 [2,5,6] 。
+合并结果是 [1,2,2,3,5,6] ，其中斜体加粗标注的为 nums1 中的元素。
+*/
+
+func merge(nums1 []int, m int, nums2 []int, n int) {
+	right1, right2, tail := m-1, n-1, m+n-1
+	var cur int
+	for right1 >= 0 || right2 >= 0 {
+		if right1 == -1 {
+			cur = nums2[right2]
+			right2--
+		} else if right2 == -1 {
+			cur = nums1[right1]
+			right1--
+		} else if nums2[right2] > nums1[right1] {
+			cur = nums2[right2]
+			right2--
+		} else {
+			cur = nums1[right1]
+			right1--
+		}
+		nums1[tail] = cur
+		tail--
+	}
+}
+
+/***
+	二分查找I：
+	给定⼀一个 n 个元素有序的(升序)整型数组 nums 和⼀一个⽬目标值 target ，写⼀一个函数搜索 nums 中的 target，如果⽬目标值存在返回 下标，否则返回 -1。
+示例例 1:
+输⼊入: nums = [-1,0,3,5,9,12], target = 9 输出: 4
+解释: 9 出现在 nums 中并且下标为 4
+*/
+func search(nums []int, target int) int {
+	low, high := 0, len(nums)-1
+	for low <= high {
+		mid := (high-low)/2 + low
+		num := nums[mid]
+		if num == target {
+			return mid
+		} else if num > target {
+			high = mid - 1
+		} else {
+			low = mid + 1
+		}
+	}
+	return -1
+}
+
+/**
+	二分查找II
+请实现有重复数字的升序数组的⼆二分查找。 输出在数组中第⼀一个⼤大于等于查找值的位置，如果数组中不不存在这样的数(指不不存在⼤大于等于查找值的数)，则输出数组⻓长度加⼀一。 示例例1
+nums :{0,1,2,3,4,5,5,5,5,5,5,5,6,7,8} 输出:6 (从1开始的位置)
+*/
+
+func upper_bound_(nums []int, target int) int {
+	left, right := 0, len(nums)-1
+	for left < right {
+		mid := left + (right-left)/2
+		num := nums[mid]
+		if num < target {
+			left = mid + 1
+		} else {
+			right = mid
+		}
+	}
+	return left + 1
+}
