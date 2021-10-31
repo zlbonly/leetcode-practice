@@ -30,6 +30,7 @@ type TreeNode struct {
 16、二叉树路径总和I
 17、二叉树路径综和II
 18、二叉树最大路径
+19、二叉树最小的深度
 */
 
 /*
@@ -658,6 +659,39 @@ func dfsHelper(root *TreeNode, maxSum *int) int {
 	//自底向上的分治,直到到了最底层，才开始计算并返回答案
 	*maxSum = max(*maxSum, root.Val+leftSum+rightSum)
 	return max(root.Val+leftSum, root.Val+rightSum)
+}
+
+/**
+19、题目描述： 二叉树的最小深度
+给定一个二叉树，找出其最小深度。最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+说明：叶子节点是指没有子节点的节点。
+解题思路：基于层次遍历
+*/
+func minDepth(root *TreeNode) int {
+	if root == nil {
+		return 0
+	}
+	depth := 1
+	queue := make([]*TreeNode, 0)
+	queue = append(queue, root)
+	for len(queue) > 0 {
+		length := len(queue)
+		for i := 0; i < length; i++ {
+			temp := queue[0]
+			if temp.Left == nil && temp.Right == nil {
+				return depth
+			}
+			if temp.Left != nil {
+				queue = append(queue, temp.Left)
+			}
+			if temp.Right != nil {
+				queue = append(queue, temp.Right)
+			}
+			queue = queue[1:]
+		}
+		depth++
+	}
+	return depth
 }
 
 /**

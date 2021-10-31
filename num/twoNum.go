@@ -546,3 +546,28 @@ func upper_bound_(nums []int, target int) int {
 	}
 	return left + 1
 }
+
+/**
+判断1个数字，是否是回文数例如 1221,12321
+思路：倒序遍历数字，判断是否和原数字相等。
+
+如果是负数则一定不是回文数，直接返回 false
+如果是正数，则将其倒序数值计算出来，然后比较和原数值是否相等
+如果是回文数则相等返回 true，如果不是则不相等 false
+比如 123 的倒序 321，不相等；121 的倒序 121，相等
+
+*/
+func isHuiwenNum(num int) bool {
+	if num < 0 {
+		return false
+	}
+
+	total := 0
+	cur := num
+
+	for cur != 0 {
+		total = total*10 + cur%10
+		cur = cur / 10
+	}
+	return total == num
+}

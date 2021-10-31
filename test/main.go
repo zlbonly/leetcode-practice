@@ -2,383 +2,297 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 	"sync"
 	"time"
-	"unsafe"
 )
 
-/**
-	channel使用场景
-	1、信号通知 （一个任务完成了，通知另一个任务执行 。例如：经常会有这样的场景，当信息收集完成，通知下游开始计算数据）
-	2、超时处理
-	3、生产消费模型
-	4、数据传递
-	5、控制并发数
-	6、自定义互斥锁（通过设置一个缓冲区为1的通道，如果成功的往通道里发送数据，说明拿到锁，否则锁被别人拿走了，等待他人解锁）
-
-
-	channel产生的panic
-	1、关闭1个nil值的channel会引发panic
-	2、关闭一个已关闭的channel会引发panic
-	3、向一个已关闭的channel发送数据
-
-	1、向已关闭的channel写入数据会触发panic
-	2、从关闭的channel读取
-		1、有缓存通道 。依旧可以读出关闭前写入的值，如果没有值时，会返回该类型的零值
-		2、无缓存通道。读出对应类型的零值
-·
-	select可同时监控多路channel，并处理最先发生的channel
-
-	为什么需要协程池？
-	1、无限开启协程，导致标准输出被过多并发操作，从而产生panic。
-	2、无限开启协程，导致程序占用过多内存，存在内存不足而崩溃的风险。
-	3、协程过多会造成gc的压力。
-
-	1、Ants - 高性能低损耗的 Goroutine 池
-		Ants 对于任务的执行原理比较直观，通过一个工作池的形式维护 goroutine 集合。
-		当向工作池提交任务时，从池中取出 worker 来执行。如果已经存在可用的 goroutine 了，
-		那么直接开始执行，如果没有，则需要判断是否已经达到容量上限。如果还没有超过，
-		那就意味着可用的 worker 比容量更少，此时启动新的 worker 来执行。
-		而如果容量已经用完，就依据是否为阻塞模式，来马上返回，或是阻塞等待。
-
-		当任务执行完毕，对应的 worker 就会得到释放，重新回到池中，等待下一个任务的调度，实现 goroutine 的复用。
-
-
-*/
-
 func main() {
-	//testNotify()
-	testOdd()
+	//testNums()
+	//testNum4()
+	//testNum5()
+
+	nums := []int{0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 5, 5, 6, 7, 8}
+	fmt.Printf("%v", binarySearchFirst(nums, 9))
 }
 
-func testOdd() {
+func binarySearchFirst(nums []int, target int) int {
+	left, right, pivot := 0, len(nums)-1, 0
+	for left < right {
+		pivot = left + (right-left)/2
+		if target > nums[pivot] {
+			left = pivot + 1
+		} else {
+			right = pivot
+		}
+	}
+	if nums[left] == target {
+		return left
+	}
+	return -1
+}
+
+/**
+升序数组热分查找
+*/
+func binarySearch(nums []int, target int) int {
+	low, high, pivot := 0, len(nums)-1, 0
+	for low <= high {
+		pivot = low + (high-low)/2
+		if target == nums[pivot] {
+			return pivot
+		} else if target > nums[pivot] {
+			low = pivot + 1
+		} else if target < nums[pivot] {
+			high = pivot - 1
+		}
+	}
+	return -1
+}
+
+func testNum5() {
+
+	quit := make(chan struct{})
+
+	go func() {
+		fmt.Printf("%v", 22222222)
+		quit <- struct{}{}
+	}()
+	//Label:
+	for {
+		select {
+		case <-quit:
+			return
+			//break Label
+		default:
+
+		}
+	}
+}
+
+func testNum4() {
+	ch1, ch2, ch3 := make(chan bool), make(chan bool), make(chan bool)
+	//var wg sync.WaitGroup
+	//wg.Add(3)
+	clo := make(chan bool)
+	go func() {
+		//Label:
+		for i := 1; i <= 100; i += 3 {
+			select {
+			case <-ch1:
+				fmt.Println("A -> ", i)
+				if i < 100 {
+					ch2 <- true
+				} else {
+					//close(ch1)
+					//close(ch2)
+					//close(ch3)
+					//break Label
+					//clo <- true
+				}
+			}
+		}
+		//wg.Done()
+	}()
+	go func() {
+		//Label:
+		for i := 2; i <= 100; i += 3 {
+			select {
+			case <-ch2:
+				fmt.Println("B -> ", i)
+				if i < 100 {
+					ch3 <- true
+				} else {
+					//close(ch1)
+					//close(ch2)
+					//close(ch3)
+					//break Label
+					clo <- true
+				}
+			}
+		}
+		//wg.Done()
+	}()
+	go func() {
+		//Label:
+		for i := 3; i <= 100; i += 3 {
+			select {
+			case <-ch3:
+				fmt.Println("C -> ", i)
+				if i < 100 {
+					ch1 <- true
+				} else {
+					//close(ch1)
+					//close(ch2)
+					//close(ch3)
+					//break Label
+					clo <- true
+				}
+			}
+		}
+		//wg.Done()
+	}()
+	ch1 <- true
+Label:
+	for {
+		select {
+		case <-clo:
+			close(ch1)
+			close(ch2)
+			close(ch3)
+			break Label
+		default:
+
+		}
+	}
+	//wg.Wait()
+}
+
+func testNums() {
 	var wg sync.WaitGroup
-	ch := make(chan struct{})
+	ch1 := make(chan bool, 1)
+	ch2 := make(chan bool)
+	ch3 := make(chan bool)
 
-	wg.Add(2)
-
-	// 1、打印奇数
+	wg.Add(3)
 	go func() {
-		defer wg.Done()
-		for i := 1; i < 101; i++ {
-			ch <- struct{}{}
-			if i%2 == 1 {
-				fmt.Printf("%d ", i)
+		defer func() {
+			wg.Done()
+		}()
+		for i := 1; i <= 30; i += 3 {
+			if _, ok := <-ch1; ok {
+				fmt.Printf("协程1打印：%v\n", i)
+				ch2 <- true
 			}
 		}
 	}()
 
-	// 2、打印偶数
 	go func() {
-		defer wg.Done()
-		for i := 1; i < 101; i++ {
-			<-ch
-			if i%2 == 0 {
-				fmt.Printf("%d ", i)
+		defer func() {
+			wg.Done()
+
+		}()
+		for i := 2; i <= 30; i += 3 {
+			if _, ok := <-ch2; ok {
+				fmt.Printf("协程2打印：%v\n", i)
+				ch3 <- true
 			}
 		}
 	}()
+
+	go func() {
+		defer func() {
+			wg.Done()
+			close(ch1)
+			close(ch2)
+			close(ch3)
+		}()
+		for i := 3; i <= 30; i += 3 {
+			if _, ok := <-ch3; ok {
+				fmt.Printf("协程3打印：%v\n", i)
+				ch1 <- true
+			}
+		}
+	}()
+	ch1 <- true
 	wg.Wait()
 }
 
-func testNotify() {
-	ch := make(chan struct{})
-	go func() {
-		collectMsg(ch)
-	}()
-	<-ch
-
-	calculateMsg()
-}
-
-func calculateMsg() {
-	fmt.Println("开始进行数据分析~")
-}
-
-func collectMsg(isOver chan struct{}) {
-	fmt.Println("开始采集数据")
-	time.Sleep(3000 * time.Millisecond)
-	fmt.Println("完成采集")
-	isOver <- struct{}{}
-}
-
-func testChannel1() {
-	fmt.Println("Begin doing something")
-	c := make(chan bool)
-
-	go func() {
-		defer close(c)
-		fmt.Println("doing something")
-	}()
-
-	<-c
-
-	fmt.Println("Done ! ")
-}
-func worker(start chan bool, index int) {
-	<-start
-	fmt.Println("This is worker:", index)
-}
-
-func testChanncel2() {
-	start := make(chan bool)
-	for i := 1; i <= 100; i++ {
-		go worker(start, i)
-	}
-	close(start)
-
-	select {}
-}
-
-func producer(c chan int, max int) {
-	defer close(c)
-	for i := 0; i < max; i++ {
-
-		c <- i
-	}
-}
-
-func consumer(c chan int) {
-	var v int
-	ok := true
-	for ok {
-		if v, ok = <-c; ok {
-			fmt.Println(v)
-		}
-	}
-}
-
-var quit chan int = make(chan int)
-
-func loop() {
-	for i := 0; i < 10; i++ {
-		fmt.Printf("%d", i)
-	}
-	quit <- 0
-}
-
-/**
-系统的线程会抢占式地输出
-
-*/
-
-/***
-1、缓存为1的通道和无缓存通道的区别
-答：1、无缓存通道channel必须在接受方与发送方同时准备好时，通道才能正常传递数据，否则双方只有一方在线都会阻塞
-	无缓存通道如果将将接收方与发送方放在一个程序里，会死锁
-	2、有缓存channel,当缓冲区满时，发送数据会阻塞，当缓存区为空时，接受数据会阻塞。发送方和接收方不需要同时做好准备。
-*/
-func main11() {
-
-	//done2 :=make(chan bool,1)
-	//fmt.Print(done1,done2)
-
-	/*var(
-		name string
-		age int
-		desc string
-	)
-	//fmt.Scan(&name,&age,&desc)
-
-	fmt.Scanln(&name,&age,&desc)
-
-	fmt.Printf("%v%v%v",name,age,desc)*/
-	/*go loop()
-	go loop()
-
-	for i:=0;i<2;i++{
-		<-quit
-	}
-	time.Sleep(10e6)
-
-	defer func() {
-		if r := recover();r != nil{
-			fmt.Printf("%v",111)
-		}
-	}()*/
-	/*ch :=make(chan int,10)
-	go producer(ch,30)
-	go consumer(ch)
-
-	time.Sleep(10e6)*/
-	//testChannel1()
-	//testChanncel2()
-
-	/*f1 :="yyyy-MM-dd"
-	f2 :="M/d/yyyy"
-	f3 := "yyyy/M/d"
-	s :=""
-	fmt.Scan(&s)
-	indexArr :=make([]int,0)
-	for i:=0;i<len(s);i++{
-		fmt.Printf("%v",string(s[i]))
-		if string(s[i]) == "'"{
-			indexArr = append(indexArr,i)
-		}
-	}
-	json.Marshal()
-
-	s1 := s[indexArr[0]+1:indexArr[1]]
-	s2 := s[indexArr[2]+1:indexArr[3]]
-	sArr1 := strings.Split(s1,"/")
-	if s2 == f1 {
-		s2 = strings.Replace(s2,"yyyy",sArr1[0],1)
-		s2 = strings.Replace(s2,"MM",sArr1[1],1)
-		s2 = strings.Replace(s2,"dd",sArr1[2],1)
-
-	}else if  s2 == f2 {
-		s2 = strings.Replace(s2,"M",sArr1[1],1)
-		s2 = strings.Replace(s2,"d",sArr1[2],1)
-		s2 = strings.Replace(s2,"yyyy",sArr1[0],1)
-	}else if s2 == f3 {
-		s2 = strings.Replace(s2,"yyyy",sArr1[0],1)
-		s2 = strings.Replace(s2,"M",sArr1[1],1)
-		s2 = strings.Replace(s2,"d",sArr1[2],1)
-	}*/
-}
-
-type Student struct {
-	Name string
-	Age  int
-}
-
-func StudentRegister(name string, age int) *Student {
-	s := new(Student)
-	s.Name = name
-	s.Age = age
-	return s
-}
-
-func F() []int {
-	a := make([]int, 0, 20)
-	return a
-}
-
-func Slice() {
-	s := make([]int, 10000, 100000)
-	for index, _ := range s {
-		s[index] = index
-	}
-}
-
-func dynamic() {
-}
-
-type UserData struct {
-	Name string
-}
-
-func GetUserInfo(userInfo UserData) *UserData {
-	return &userInfo
-}
-
-/***
-
-优化建议
-
-func main() {
-	var info UserData
-	info.Name = "WilburXu"
-	_ = GetUserInfo(&info)
-}
-
-func GetUserInfo(userInfo *UserData) *UserData {
-	return userInfo
-}
-
-
-*/
-
-type demo1 struct {
-	a int8
-	b int16
-	c int32
-}
-
-type demo2 struct {
-	a int8
-	c int32
-	b int16
-}
-
-func main1() {
-	/*t := time.After(time.Second * 3)
-	fmt.Printf("t type=%T\n", t)
-	//阻塞3秒
-	fmt.Println("t=", <-t)*/
-	/*	a :=[]int{1,2,3,4,5,6,7,8}
-		fmt.Printf("%v",ZlbSerarch(len(a), func(i int) bool {
-			return a[i] >= 2
-		}))*/
-	fmt.Println(unsafe.Alignof(demo1{}))
-	fmt.Println(unsafe.Alignof(demo2{}))
-
-	fmt.Printf("demo sizeof =%v,demo2 sizeof = %v", unsafe.Sizeof(demo1{}), unsafe.Sizeof(demo2{}))
-}
-
-func ZlbSerarch(n int, f func(int) bool) int {
-
-	i, j := 0, n
-
-	for i < j {
-		h := int(uint(i+j) >> 1)
-		if !f(h) {
-			i = h + 1
+func findMinI(nums []int) int {
+	low, high := 0, len(nums)-1
+	for low < high {
+		pivot := low + (high-low)/2
+		if nums[pivot] < nums[high] {
+			high = pivot
 		} else {
-			j = h
+			low = pivot + 1
 		}
 	}
-	return i
-}
-
-func Fibonacci() func() int {
-	a, b := 0, 1
-	return func() int {
-		a, b = b, a+b
-		return a
-	}
+	return nums[low]
 }
 
 /**
 
-	一、逃逸场景
-	1、指针逃逸
-		Go可以返回局部变量指针，这其实是一个典型的变量逃逸案例
-	通过go bulid -gcflags=-m 查看  发现 StudentRegister中 new(Student) 逃逸到堆上
+ */
+func findMinUniqueII(nums []int) int {
+	low, high := 0, len(nums)-1
+	for low < high {
+		pivot := low + (high-low)/2
 
-	2、栈空间不足逃逸（空间开辟过大）
-		实际上当栈空间不足以存放当前对象时或无法判断当前切片长度时会将对象分配到堆中。
+		//  最小值一定在中间值nums[pivot]和最右侧值nums[pivot]中间，且不包括nums[pivot]，因此可以跳过。
+		if nums[pivot] > nums[high] {
+			low = pivot + 1
+		} else if nums[pivot] < nums[high] {
+			// 最小值一定在最左侧值nums[low]和中间值nums[pivot]之间，但是不确定nums[pivot]是否最小值，因此不能跳过。
+			high = pivot
+		} else {
+			// 中间值nums[pivot]和最右侧值nums[high]相等，没法确定最小值位置，但是，nums[high]肯定有
+			// nums[pivot]可以替换，因此可以忽略右端点。
+			high--
+		}
+	}
+	return nums[low]
+}
 
-	3、动态类型逃逸
-		// 动态分配不定空间 逃逸
-	例如 dynamic()
+func goroutineNums() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	goroutineTotals := 10
+	ch := make(chan int, 3)
+	wg := &sync.WaitGroup{}
+	for i := 0; i < goroutineTotals; i++ {
+		wg.Add(1)
+		ch <- i
+		go worker(ch, wg)
+	}
+	wg.Wait()
+}
 
-	4、闭包引用对象逃逸
+func worker(ch chan int, wg *sync.WaitGroup) {
+	wg.Done()
+	//time.Sleep(time.Second)
+	if value, ok := <-ch; ok {
+		fmt.Printf("执行时间:%v,worker%v\n", time.Now().UnixNano(), value)
+	}
+}
 
-	例如 Fibonacci
-Fibonacci()函数中原本属于局部变量的a和b由于闭包的引用，不得不将二者放到堆上，以致产生逃逸。
+func controlChannelGoroutineNums() {
+	count := 9
+	limit := 3
+	ch := make(chan bool, limit)
+	fmt.Printf("%v hesh\n", runtime.NumCPU())
+	runtime.GOMAXPROCS(4)
+	var wg sync.WaitGroup
+	wg.Add(count)
+	for i := 0; i < count; i++ {
+		go func(num int) {
+			defer wg.Done()
+			ch <- true
+			fmt.Printf("%d 我在执行，time %d\n", num, time.Now().Unix())
+			time.Sleep(2 * time.Second)
+			<-ch
+		}(i)
+	}
 
+	wg.Wait()
+	close(ch)
+}
 
-二、逃逸分析的作用是什么呢？
-逃逸分析的好处是为了减少gc的压力，不逃逸的对象分配在栈上，当函数返回时就回收了资源，不需要gc标记清除。
+func nums(num int) bool {
+	if num < 0 {
+		return false
+	}
 
-逃逸分析完后可以确定哪些变量可以分配在栈上，栈的分配比堆快，性能好(逃逸的局部变量会在堆上分配 ,而没有发生逃逸的则有编译器在栈上分配)。
+	total := 0
 
-同步消除，如果你定义的对象的方法上有同步锁，但在运行时，却只有一个线程在访问，此时逃逸分析后的机器码，会去掉同步锁运行。
+	cur := num
 
+	for cur != 0 {
 
-三、逃逸总结：
-1、栈上分配内存比在堆中分配内存有更高的效率
+		total = total*10 + cur%10
+		cur = cur / 10
+	}
 
-2、栈上分配的内存不需要GC处理
+	fmt.Printf("%v ", total)
 
-3、堆上分配的内存使用完毕会交给GC处理
-
-4、逃逸分析目的是决定内分配地址是栈还是堆
-
-5、逃逸分析在编译阶段完成
-
-提问：函数传递指针真的比传值效率高吗？
-我们知道传递指针可以减少底层值的拷贝，可以提高效率，但是如果拷贝的数据量小，由于指针传递会产生逃逸，可能会使用堆，也可能会增加GC的负担，所以传递指针不一定是高效的。
-
-*/
+	return total == num
+}
