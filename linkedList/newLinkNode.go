@@ -191,6 +191,7 @@ func mergeKLists(lists []*ListNode) *ListNode {
 定义两个指针，快指针 fastfast， 慢指针 lowlow .
 让 fastfast 先向前移动 kk 个位置，然后 lowlow 和 fastfast 再一起向前移动 .
 当 fastfast 到达链表尾部，返回 lowlow .
+
 */
 func getKthFromEnd(head *ListNode, k int) *ListNode {
 	if head == nil {
@@ -782,21 +783,23 @@ func deleteDuplicatesII(head *ListNode) *ListNode {
 	if head == nil {
 		return nil
 	}
+	dumpNode := &ListNode{Val: -1}
+	dumpNode.Next = head
 
-	dummy := &ListNode{0, head}
-	cur := dummy
-	for cur.Next != nil && cur.Next.Next != nil {
-		if cur.Next.Val == cur.Next.Next.Val {
-			x := cur.Next.Val
-			for cur.Next != nil && cur.Next.Val == x {
-				cur.Next = cur.Next.Next
-			}
+	pre, cur := dumpNode, head
+	for cur != nil && cur.Next != nil {
+		if cur.Val != cur.Next.Val {
+			pre = pre.Next
+			cur = cur.Next
 		} else {
+			for cur != nil && cur.Next != nil && cur.Val == cur.Next.Val {
+				cur = cur.Next
+			}
+			pre.Next = cur.Next
 			cur = cur.Next
 		}
 	}
-
-	return dummy.Next
+	return dumpNode.Next
 }
 
 /**
