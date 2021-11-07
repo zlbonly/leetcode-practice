@@ -20,6 +20,7 @@ package main
 17、删除排序链表中的重复元素
 18、删除排序链表中的重复元素II（只保留没有出现过的元素）
 19、链表求和
+20、链表反转（中间节点链表反转）
 */
 // 每个结点包括两个部分： 一个是存储数据元素的数据域，另一个是存储下一个结点地址的指针域。
 // 头结点的数据域可以不存储任何信息，头结点的指针域存储指向第一个结点的指针（即第一个元素结点的存储位置）。头结点的作用是使所有链表（包括空表）的头指针非空，并使对单链表的插入、删除操作不需要区分是否为空表或是否在第一个位置进行，从而与其他位置的插入、删除操作一致。
@@ -803,7 +804,7 @@ func deleteDuplicatesII(head *ListNode) *ListNode {
 }
 
 /**
-题目描述：链表求和
+题目描述：19、链表求和
 给定两个用链表表示的整数，每个节点包含一个数位。这些数位是反向存放的，也就是个位排在链表首部。
 编写函数对这两个整数求和，并用链表形式返回结果。
 示例 反向存放
@@ -843,4 +844,45 @@ func addTwoNumbersI(l1 *ListNode, l2 *ListNode) *ListNode {
 		cur = cur.Next
 	}
 	return dumpHead.Next
+}
+
+/**
+题目描述：20 链表反转II （中间节点链表反转）
+		给你单链表的头指针 head 和两个整数 left 和 right ，其中 left <= right 。
+		请你反转从位置 left 到位置 right 的链表节点，返回 反转后的链表 。
+示例：
+	输入：head = [1,2,3,4,5], left = 2, right = 4
+	输出：[1,4,3,2,5]
+解题思路：
+	1、定义指针 分别为 g（guard守卫） 和 p(point)，根据m和n的参数，确定g 和 p 的位置。
+	将g移动到第一个要反转的节点的前面，将p移动到第一个要反转的节点的位置上。
+	例如：
+	  1   ->   2  ->  3   -> 4 	-> 5   -> NULL
+	  dump ->  1   ->   2  ->  3   -> 4 -> 5  -> NULL
+	  dump ->  1   ->   2  ->  3   -> 4 -> 5  -> NULL
+				g       p
+	2、将p后面的元素删除，然后添加到 g的后面，也即头插法
+	3、根据m和n 重复步骤（2）
+	4、返回dumpHead.next结点
+
+	链接：https://leetcode-cn.com/problems/reverse-linked-list-ii
+*/
+func reverseBetWeen(head *ListNode, m int, n int) *ListNode {
+	dump := &ListNode{Val: -1, Next: head}
+	pre := dump
+	g, p := pre, pre.Next
+
+	// 将指针移动到相应位置
+	for i := 0; i < m-1; i++ {
+		p = p.Next
+		g = g.Next
+	}
+	// 头插法插入结点
+	for i := 0; i < n-m; i++ {
+		removed := p.Next
+		p.Next = p.Next.Next
+		removed.Next = g.Next
+		g.Next = removed
+	}
+	return dump.Next
 }
