@@ -21,6 +21,7 @@ package main
 18、删除排序链表中的重复元素II（只保留没有出现过的元素）
 19、链表求和
 20、链表反转（中间节点链表反转）
+21、随机链表（深拷贝）
 */
 // 每个结点包括两个部分： 一个是存储数据元素的数据域，另一个是存储下一个结点地址的指针域。
 // 头结点的数据域可以不存储任何信息，头结点的指针域存储指向第一个结点的指针（即第一个元素结点的存储位置）。头结点的作用是使所有链表（包括空表）的头指针非空，并使对单链表的插入、删除操作不需要区分是否为空表或是否在第一个位置进行，从而与其他位置的插入、删除操作一致。
@@ -883,6 +884,56 @@ func reverseBetWeen(head *ListNode, m int, n int) *ListNode {
 		p.Next = p.Next.Next
 		removed.Next = g.Next
 		g.Next = removed
+	}
+	return dump.Next
+}
+
+/***
+	21、题目描述：随机链表深拷贝
+		1、给你一个长度为 n 的链表，每个节点包含一个额外增加的随机指针 random ，该指针可以指向链表中的任何节点或空节点。
+		构造这个链表的 深拷贝。 深拷贝应该正好由 n 个 全新 节点组成，其中每个新节点的值都设为其对应的原节点的值。
+       新节点的 next 指针和 random 指针也都应指向复制链表中的新节点，并使原链表和复制链表中的这些指针能够表示相同的链表状态。复制链表中的指针都不应指向原链表中的节点 。
+		例如，如果原链表中有 X 和 Y 两个节点，其中 X.random --> Y 。那么在复制链表中对应的两个节点 x 和 y ，同样有 x.random --> y 。
+		返回复制链表的头节点。
+	链接：https://leetcode-cn.com/problems/copy-list-with-random-pointer
+*/
+
+type ListNode2 struct {
+	Val    int
+	Next   *ListNode2
+	Random *ListNode2
+}
+
+func copyRandomList(head *ListNode2) *ListNode2 {
+	if head == nil {
+		return nil
+	}
+	// 1、在每个原节点后面创建一个新节点
+	cur := head
+	for cur != nil {
+		cur.Next = &ListNode2{
+			Val:  cur.Val,
+			Next: cur.Next,
+		}
+		cur = cur.Next.Next
+	}
+	// 2、设置新节点的随机节点
+	cur = head
+	for cur != nil {
+		if cur.Random != nil {
+			cur.Next.Random = cur.Random.Next
+		}
+		cur = cur.Next.Next
+	}
+	// 3、将两个链表分离
+
+	dump := &ListNode2{Val: -1}
+	cur, temp := head, dump
+	for cur != nil {
+		temp.Next = cur.Next
+		temp = temp.Next
+		cur.Next = temp.Next
+		cur = cur.Next
 	}
 	return dump.Next
 }
