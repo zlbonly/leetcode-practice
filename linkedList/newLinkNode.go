@@ -563,14 +563,14 @@ func isPalindrome(head *ListNode) bool {
 第三步，依次连接两个链表
 1 -> 6 -> 2 -> 5 -> 3 -> 4
 */
-func reorderList(head *ListNode) {
+func reorderList(head *ListNode) *ListNode {
 	if head == nil {
-		return
+		return nil
 	}
-
-	nodes := []*ListNode{}
-	for node := head; node != nil; node = node.Next {
-		nodes = append(nodes, node)
+	nodes := make([]*ListNode, 0)
+	for head != nil {
+		nodes = append(nodes, head)
+		head = head.Next
 	}
 	start, end := 0, len(nodes)-1
 	for start < end {
@@ -583,6 +583,7 @@ func reorderList(head *ListNode) {
 		end--
 	}
 	nodes[start].Next = nil
+	return nodes[0]
 }
 
 /**
