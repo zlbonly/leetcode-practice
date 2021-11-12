@@ -927,14 +927,12 @@ func copyRandomList(head *ListNode2) *ListNode2 {
 		cur = cur.Next.Next
 	}
 	// 3、将两个链表分离
-
 	dump := &ListNode2{Val: -1}
-	cur, temp := head, dump
+	cur, prev := head, dump
 	for cur != nil {
-		temp.Next = cur.Next
-		temp = temp.Next
-		cur.Next = temp.Next
-		cur = cur.Next
+		prev.Next = cur.Next
+		prev = prev.Next
+		cur = cur.Next.Next
 	}
 	return dump.Next
 }
