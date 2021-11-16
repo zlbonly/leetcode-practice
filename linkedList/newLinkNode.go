@@ -289,28 +289,26 @@ func partition(head *ListNode, x int) *ListNode {
 
 /***
 	8、删除链表的倒数第 N 个结点
-	我们也可以在遍历链表的同时将所有节点依次入栈。根据栈「先进后出」的原则，我们弹出栈的第 nn 个节点就是需要删除的节点，并且目前栈顶的节点就是待删除节点的前驱节点。这样一来，删除操作就变得十分方便了。
-复杂度分析
+	1、双指针解决
+	时间复杂度：O(L)，其中 L 是链表的长度。
+	空间复杂度：O(1)。
 时间复杂度：O(L)，其中 L 是链表的长度。
 空间复杂度：O(L)，其中 L是链表的长度。主要为栈的开销。
 参考链接：	https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/solution/shan-chu-lian-biao-de-dao-shu-di-nge-jie-dian-b-61/
 */
 
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	dumpyHead := &ListNode{Val: -1}
-	dumpyHead.Next = head
-	cur := dumpyHead
-	length := 0
-	for head != nil {
-		head = head.Next
-		length++
+	dump := &ListNode{Val: -1, Next: head}
+	first, slow := head, dump
+	for i := 0; i < n; i++ {
+		first = first.Next
 	}
-
-	for i := 0; i < length-n; i++ {
-		cur = cur.Next
+	for first != nil {
+		first = first.Next
+		slow = slow.Next
 	}
-	cur.Next = cur.Next.Next
-	return dumpyHead.Next
+	slow.Next = slow.Next.Next
+	return dump.Next
 }
 
 /*
