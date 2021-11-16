@@ -31,6 +31,7 @@ type TreeNode struct {
 17、二叉树路径综和II
 18、二叉树最大路径
 19、二叉树最小的深度
+20、二叉树的直径
 */
 
 /*
@@ -581,84 +582,52 @@ func dfsPathSumII(root *TreeNode, targetSum int, path []int, res *[][]int) {
 -1000 <= Node.val <= 1000
 
 
-
 解题思路：
-1、路径每走到一个节点，有3中选择：1：停在当前节点，2: 走到左子节点，3：走到右子节点
-2、走到子节点，又面临3中选择，递归就是用来处理规模不一样的相同问题。
-！！！ 不能走进一个分支又掉头回来走另一个分支，路径会重叠，不符合定义。
+二叉树 abc，a 是根结点（递归中的 root），bc 是左右子结点（代表其递归后的最优解）。
+最大的路径，可能的路径情况：
+	a
+ b		c
 
+1、b + a + c。
+2、b + a + a 的父结点。
+3、a + c + a 的父结点。
 
-定义递归函数：
-	1、对于一个节点而言，它只关心自己走入一个子树，能从中捞取的最大收益，不用管具体怎么走。
-	2、定义dfs函数，返回当前子树向父节点 "提供"的最大路径和，即，一条从父节点延伸下来的路径，能在当前子树中获取到的最大收益
-	分为三种情况：
-		1、路径停在当前子树的跟节点，在这个子树中的收益 root.val
-		2、走入左子树，在这个子树中的最大收益：root.val + dfs(root.left)
-		3、走入右子树，在这个子树中的最大收益：root.val + dfs(root.right)
+其中情况 1，表示如果不联络父结点的情况，或本身是根结点的情况。
+这种情况是没法递归的，但是结果有可能是全局最大路径和。
+情况 2 和 3，递归时计算 a+b 和 a+c，选择一个更优的方案返回，也就是上面说的递归后的最优解啦。
 
+另外结点有可能是负值，最大和肯定就要想办法舍弃负值（max(0, x)）（max(0,x)）。
+但是上面 3 种情况，无论哪种，a 作为联络点，都不能够舍弃。
 
-	对于当前父节点而言的三种选择，收益最大值：root.val + max(dfs(root.left),dfs(root.right))
-再次提醒: 一条从父节点延伸下来的路径，不能走入左子树又掉头走右子树，不能两头收益，路径会重叠。
+代码中使用 val 来记录全局最大路径和。
+ret 是情况 2 和 3。
+lmr 是情况 1。
 
-当遍历到null节点时，null 子树提供不了收益，返回 0。
+所要做的就是递归，递归时记录好全局最大和，返回联络最大和。
 
-如果某个子树 dfs 结果为负，走入它，收益不增反减，该子树应被忽略，杜绝选择走入它的可能，让它返回 0，像null一样如同砍掉。
-
-子树中的内部路径要包含根节点
-由题意可知，最大路径和可能产生于局部子树中，如下图左一。所以每递归一个子树，都求一下当前子树内部的最大路径和，见下图右一，从中比较出最大的。
-
-注意: 一个子树内部的路径，要包含当前子树的根节点。如果不包含，那还算什么属于当前子树的路径，那就是当前子树的子树的内部路径了。
-
-所以，一个子树内部的最大路径和 = 左子树提供的最大路径和 + 根节点值 + 右子树提供的最大路径和。即 dfs(root.left) + root.val + dfs(root.right)
-
-时间复杂度 O(N)O(N)，每个节点都要遍历，空间复杂度是 O(H)O(H)，递归树的深度。
-
-复盘总结
-递归一个树，会对每个子树做同样的事（你写的处理逻辑）。
-通过求出每个子树对外提供的最大路径和（return出来给父节点），从递归树底部向上，求出每个子树内部的最大路径和，后者是求解的目标，它的求解需要子树提供的值，理解清楚二者的关系。
-每个子树的内部最大路径和，都挑战一下最大纪录，递归结束时，最大纪录就有了。
-思考递归问题，不要纠结细节实现，结合求解的目标，自顶而下、屏蔽细节地思考。随着递归出栈，子问题自下而上地解决，最后解决了整个问题，内部细节是子递归帮你去做的。
-你要做的只是写好递归的处理逻辑，怎么处理当前子树？需要返回东西吗？返回什么？再设置好递归的出口。其实就是——正确定义递归函数。
-
-
-解题思路：
-	1、题目要求出一个二叉树的最大路径和，路径和就是把一条路径上面节点的值加起来，这一题的难点在于路径的方向不固定，只要是任意两点间的通路都算是有效路径。
-这时我们得需要当前节点左右子树的信息，所以我们可以考虑使用之前提到的 自底向上 的分治，有了当前节点，左右子树到当前节点的最大路径，我们可以看看这里会有几种情况，我用 root 表示当前节点，left 表示左子树到 root 的最大和的路径，right 表示右子树到 root 的最大和的路径：
-
-root 和左右路径形成路径（left – root – right）
-
-root 和左路径形成路径（left – root）
-
-root 和右路径形成路径（root – right）
-
-root 自成路径（root）
-
-你可以看到这四种情况都会把当前节点考虑在内，我们可以更新这里的最大值。
-
-但是需要注意的是，我们返回的时候，第一种情况是不能返回的，因为对于上一层节点来说，其无法形成有效的路径，因此我们只需要将 2，3，4 中的最大值返回即可，当然，更新全局答案的时候，这 4 种情况都需要考虑在内的
-
+参考链接：https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/solution/er-cha-shu-zhong-de-zui-da-lu-jing-he-by-ikaruga/
 */
 
 func maxPathSum(root *TreeNode) int {
-	if root == nil {
-		return 0
-	}
 	maxSum := math.MinInt32
-	dfsHelper(root, &maxSum)
-	return maxSum
-}
-
-func dfsHelper(root *TreeNode, maxSum *int) int {
-	if root == nil {
-		return 0
+	var maxGain func(*TreeNode) int
+	maxGain = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		// 递归计算左右子节点的最大贡献值
+		// 只有在最大贡献值大于 0 时，才会选取对应子节点
+		leftGain := max(maxGain(node.Left), 0)
+		rightGain := max(maxGain(node.Right), 0)
+		// 节点的最大路径和取决于该节点的值与该节点的左右子节点的最大贡献值
+		priceNewPath := node.Val + leftGain + rightGain
+		// 更新答案
+		maxSum = max(maxSum, priceNewPath)
+		// 返回节点的最大贡献值
+		return node.Val + max(leftGain, rightGain)
 	}
-	// 如果左右子树返回的最大路径值小于 0
-	// 直接将值设为 0，也就是不考虑对应的路径
-	leftSum := max(0, dfsHelper(root.Left, maxSum))
-	rightSum := max(0, dfsHelper(root.Right, maxSum))
-	//自底向上的分治,直到到了最底层，才开始计算并返回答案
-	*maxSum = max(*maxSum, root.Val+leftSum+rightSum)
-	return max(root.Val+leftSum, root.Val+rightSum)
+	maxGain(root)
+	return maxSum
 }
 
 /**
@@ -695,296 +664,43 @@ func minDepth(root *TreeNode) int {
 }
 
 /**
+	20、二叉树的直径
+	题目描述：给定一棵二叉树，你需要计算它的直径长度。
+			一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
+ 		  1
+         / \
+        2   3
+       / \
+      4   5
+	返回 3, 它的长度是路径 [4,2,1,3] 或者 [5,2,1,3]。
 
-给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
-解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
-
-示例 1：
-
-输入：nums = [1,2,3]
-输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
-
-解题连接：https://mp.weixin.qq.com/s/g5uvxi1lyxmWC4LtP0Bdlw
 */
-func subsets(nums []int) [][]int {
-	res := make([][]int, 0)
-	current := []int{}
 
-	dfsSubsets(nums, 0, current, &res)
-	return res
-}
+/**
+  思路：每个节点的最大直径路径 = 做孩子深度+右孩子深度
+      但是 因为可以不通过跟节点，因此需要将每个节点最大直径(左子树深度+右子树深度)当前最大值比较并取大者
 
-func dfsSubsets(nums []int, k int, current []int, res *[][]int) {
-	if k == len(nums) {
-		temp := make([]int, len(current))
-		copy(temp, current)
-		*res = append(*res, current)
-		return
+*/
+func diameterOfBinaryTree(root *TreeNode) int {
+	dialimeter := 0
+	var dfs func(node *TreeNode) int
+	dfs = func(node *TreeNode) int {
+		if node == nil {
+			return 0
+		}
+		leftDepth := dfs(node.Left)
+		rightDepth := dfs(node.Right)
+		dialimeter = max(dialimeter, leftDepth+rightDepth)
+		return 1 + max(leftDepth, rightDepth)
 	}
-	// 不选择第k个元素
-	dfsSubsets(nums, k+1, current, res)
-	// 选择第k个元素
-	current = append(current, nums[k])
-	dfsSubsets(nums, k+1, current, res)
-	current = current[:len(current)-1]
+	dfs(root)
+	return dialimeter
 }
 
-func max(a, b int) int {
+func max(a int, b int) int {
 	if a > b {
 		return a
+	} else {
+		return b
 	}
-	return b
-}
-
-//二叉树遍历例题总结：
-
-/**
-	1、DFS
-	DFS  全称Depth First Search 中文名为深度优先搜索。是一种以深度方向搜索某种数据结构的方法，常用栈来辅助DFS算法。深度优先搜索
-	大多要以递归方式实现，所以要考虑递归爆栈的可能性。
-
-	void traverse(TreeNode root) {
-    // 判断 base case
-    if (root == null) {
-        return;
-    }
-    // 访问两个相邻结点：左子结点、右子结点
-    traverse(root.left);
-    traverse(root.right);
-}
-
-1、第一个要素是访问相邻结点。二叉树的相邻结点非常简单，只有左子结点和右子结点两个。二叉树本身就是一个递归定义的结构：
-一棵二叉树，它的左子树和右子树也是一棵二叉树。那么我们的 DFS 遍历只需要递归调用左子树和右子树即可。
-
-2、第二个要素是 判断 base case。一般来说，二叉树遍历的 base case 是 root == null。
-这样一个条件判断其实有两个含义：一方面，这表示 root 指向的子树为空，不需要再往下遍历了。另一方面，
-在 root == null 的时候及时返回，可以让后面的 root.left 和 root.right 操作不会出现空指针异常。
-
-
-	2、BFS
-	BFS 全称 Breadth First Search 中文名为广度优先搜索。是一种以宽度方向搜索某种数据结构的方法 常用队列辅助BFS算法。
-
-*/
-
-/**
- 3、1 网格类问题的DFS遍历方法：
-1、网格问题的基本概念
-我们首先明确一下岛屿问题中的网格结构是如何定义的，以方便我们后面的讨论。
-
-网格问题是由  个小方格组成一个网格，每个小方格与其上下左右四个方格认为是相邻的，要在这样的网格上进行某种搜索。
-
-岛屿问题是一类典型的网格问题。每个格子中的数字可能是 0 或者 1。我们把数字为 0 的格子看成海洋格子，数字为 1 的格子看成陆地格子，
-这样相邻的陆地格子就连接成一个岛屿。
-
-2、网格类 DFS 的基本结构
-网格结构要比二叉树结构稍微复杂一些，它其实是一种简化版的图结构。要写好网格上的 DFS 遍历，我们首先要理解二叉树上的 DFS 遍历方法，再类比写出网格结构上的 DFS 遍历。
-我们写的二叉树 DFS 遍历一般是这样的：
- 2.1 void traverse(TreeNode root) {
-    // 判断 base case
-    if (root == null) {
-        return;
-    }
-    // 访问两个相邻结点：左子结点、右子结点
-    traverse(root.left);
-    traverse(root.right);
-}
-
-可以看到，二叉树的 DFS 有两个要素：「访问相邻结点」和「判断 base case」。
-
- 1)第一个要素是访问相邻结点。二叉树的相邻结点非常简单，只有左子结点和右子结点两个。二叉树本身就是一个递归定义的结构：一棵二叉树，它的左子树和右子树也是一棵二叉树。那么我们的 DFS 遍历只需要递归调用左子树和右子树即可。
-
-2) 第二个要素是 判断 base case。一般来说，二叉树遍历的 base case 是 root == null。这样一个条件判断其实有两个含义：一方面，这表示 root 指向的子树为空，不需要再往下遍历了。另一方面，在 root == null 的时候及时返回，可以让后面的 root.left 和 root.right 操作不会出现空指针异常。
-
-对于网格上的 DFS，我们完全可以参考二叉树的 DFS，写出网格 DFS 的两个要素：
-
-首先，网格结构中的格子有多少相邻结点？答案是上下左右四个。对于格子 (r, c) 来说（r 和 c 分别代表行坐标和列坐标），四个相邻的格子分别是 (r-1, c)、(r+1, c)、(r, c-1)、(r, c+1)。换句话说，网格结构是「四叉」的。
-
-其次，网格 DFS 中的 base case 是什么？从二叉树的 base case 对应过来，应该是网格中不需要继续遍历、grid[r][c] 会出现数组下标越界异常的格子，也就是那些超出网格范围的格子。
-
-3、这样，我们得到了网格 DFS 遍历的框架代码：
-void dfs(int[][] grid, int r, int c) {
-    // 判断 base case
-    // 如果坐标 (r, c) 超出了网格范围，直接返回
-    if (!inArea(grid, r, c)) {
-        return;
-    }
-    // 访问上、下、左、右四个相邻结点
-    dfs(grid, r - 1, c);
-    dfs(grid, r + 1, c);
-    dfs(grid, r, c - 1);
-    dfs(grid, r, c + 1);
-}
-
-// 判断坐标 (r, c) 是否在网格中
-boolean inArea(int[][] grid, int r, int c) {
-    return 0 <= r && r < grid.length
-         && 0 <= c && c < grid[0].length;
-}
-
-4、如何避免重复遍历
-网格结构的 DFS 与二叉树的 DFS 最大的不同之处在于，遍历中可能遇到遍历过的结点。这是因为，网格结构本质上是一个「图」，我们可以把每个格子看成图中的结点，每个结点有向上下左右的四条边。在图中遍历时，自然可能遇到重复遍历结点。
-
-这时候，DFS 可能会不停地「兜圈子」，永远停不下来，如下图所示
-https://mmbiz.qpic.cn/mmbiz_gif/TKAD4axFcib8CSJjOnbGUamCj2B7OiclOvhNwXiaoJdXnDNUGpmtqqlHIbPnpejyAVqnQqODmYMIxovmlLcn0xEicA/640?wx_fmt=gif&tp=webp&wxfrom=5&wx_lazy=1
-如何避免这样的重复遍历呢？答案是标记已经遍历过的格子。以岛屿问题为例，我们需要在所有值为 1 的陆地格子上做 DFS 遍历。每走过一个陆地格子，就把格子的值改为 2，这样当我们遇到 2 的时候，就知道这是遍历过的格子了。也就是说，每个格子可能取三个值：
-
-0 —— 海洋格子
-1 —— 陆地格子（未遍历过）
-2 —— 陆地格子（已遍历过）
-我们在框架代码中加入避免重复遍历的语句：
-void dfs(int[][] grid, int r, int c) {
-    // 判断 base case
-    if (!inArea(grid, r, c)) {
-        return;
-    }
-    // 如果这个格子不是岛屿，直接返回
-    if (grid[r][c] != 1) {
-        return;
-    }
-    grid[r][c] = 2; // 将格子标记为「已遍历过」
-
-    // 访问上、下、左、右四个相邻结点
-    dfs(grid, r - 1, c);
-    dfs(grid, r + 1, c);
-    dfs(grid, r, c - 1);
-    dfs(grid, r, c + 1);
-}
-
-// 判断坐标 (r, c) 是否在网格中
-boolean inArea(int[][] grid, int r, int c) {
-    return 0 <= r && r < grid.length
-         && 0 <= c && c < grid[0].length;
-}
-*/
-
-/**
-3.1 网格DFS例题1
-	岛屿的最大面积:
-	给定一个包含了一些 0 和 1 的非空二维数组 grid，一个岛屿是一组相邻的 1（代表陆地），这里的「相邻」要求两个 1 必须在水平或者竖直方向上相邻。
-	你可以假设 grid 的四个边缘都被 0（代表海洋）包围着。
-	找到给定的二维数组中最大的岛屿面积。如果没有岛屿，则返回面积为 0 。
-
-题目连接：https://leetcode-cn.com/problems/max-area-of-island/
-maxAreaOfIsland（）
-*/
-
-func maxAreaOfIsland(grid [][]int) int {
-	res := 0
-	for r := 0; r < len(grid); r++ {
-		for c := 0; c < len(grid[0]); c++ {
-			if grid[r][c] == 1 {
-				a := area(grid, r, c)
-				res = Max(res, a)
-			}
-		}
-	}
-	return res
-}
-
-/**
-463. 岛屿的周长
-	给定一个 row x col 的二维网格地图 grid ，其中：grid[i][j] = 1 表示陆地， grid[i][j] = 0 表示水域。
-
-网格中的格子 水平和垂直 方向相连（对角线方向不相连）。整个网格被水完全包围，但其中恰好有一个岛屿（或者说，一个或多个表示陆地的格子相连组成的岛屿）。
-
-岛屿中没有“湖”（“湖” 指水域在岛屿内部且不和岛屿周围的水相连）。格子是边长为 1 的正方形。网格为长方形，且宽度和高度均不超过 100 。计算这个岛屿的周长。
-
-题目地址：
-https://leetcode-cn.com/problems/island-perimeter/
-
-*/
-func islandPerimeter(grid [][]int) int {
-	for r := 0; r < len(grid); r++ {
-		for c := 0; c < len(grid[0]); c++ {
-			if grid[r][c] == 1 {
-				// 题目限制只有一个岛屿，计算一个即可
-				return dfsPerimeter(grid, r, c)
-			}
-		}
-	}
-	return 0
-}
-
-func dfsPerimeter(grid [][]int, r int, c int) int {
-	// 函数因为坐标[r,c] 超出网格范围，返回对应一条黄色的边
-	if !inArea(grid, r, c) {
-		return 1
-	}
-	// 函数因为 当前格子是海洋格子 返回 对应一条蓝色的边
-	if grid[r][c] == 0 {
-		return 1
-	}
-	// 函数因为「当前格子是已遍历的陆地格子」返回，和周长没关系
-	if grid[r][c] != 1 {
-		return 0
-	}
-	grid[r][c] = 2
-
-	return dfsPerimeter(grid, r-1, c) + dfsPerimeter(grid, r+1, c) + dfsPerimeter(grid, r, c-1) + dfsPerimeter(grid, r, c+1)
-}
-
-/**
-
-	岛屿数量：
-	给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
-岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
-此外，你可以假设该网格的四条边均被水包围。
-题目连接：https://leetcode-cn.com/problems/number-of-islands/
-*/
-func numIslands(grid [][]int) int {
-	islandNum := 0
-	for r := 0; r < len(grid); r++ {
-		for c := 0; c < len(grid[0]); c++ {
-			if grid[r][c] == 1 {
-				dfsIslandNum(grid, r, c)
-				islandNum++
-			}
-		}
-	}
-	return islandNum
-}
-
-func dfsIslandNum(grid [][]int, r int, c int) {
-	// 1、判断是否在网格范围内
-	if !inArea(grid, r, c) {
-		return
-	}
-	// 2、判断是否重复遍历
-	if grid[r][c] != 1 {
-		return
-	}
-	// 3、标记已遍历
-	grid[r][c] = 2
-	// 4、遍历上下左右网格
-	dfsIslandNum(grid, r-1, c)
-	dfsIslandNum(grid, r+1, c)
-	dfsIslandNum(grid, r, c-1)
-	dfsIslandNum(grid, r, c+1)
-}
-
-// 获取最大值
-func Max(a int, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}
-
-func area(grid [][]int, r int, c int) int {
-	// 1、判断是否在网格范围内
-	if !inArea(grid, r, c) {
-		return 0
-	}
-	// 2、判断是否重复遍历
-	if grid[r][c] != 1 {
-		return 0
-	}
-	// 3、标记已遍历
-	grid[r][c] = 2
-	// 4、遍历上下左右网格
-	return 1 + area(grid, r-1, c) + area(grid, r+1, c) + area(grid, r, c-1) + area(grid, r, c+1)
-}
-
-func inArea(grid [][]int, r int, c int) bool {
-	return 0 <= r && r < len(grid) && 0 <= c && c < len(grid[0])
 }

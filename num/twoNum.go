@@ -76,7 +76,8 @@ func twoNum1(nums []int, target int) []int {
 
 */
 
-func searchMatrixI(matrix [][]int, target int) bool {
+func searchMatrix1I(matrix [][]int, target int) bool {
+
 	for i := 0; i < len(matrix); i++ {
 		if matrix[i][0] <= target && target <= matrix[i][len(matrix[i])-1] {
 			for j := 0; j < len(matrix[i]); j++ {
@@ -116,7 +117,7 @@ func searchMatrixI(matrix [][]int, target int) bool {
 
 */
 
-func searchMatrixII(matrix [][]int, target int) bool {
+func searchMatrixI1I(matrix [][]int, target int) bool {
 
 	row := len(matrix) - 1
 	col := 0
@@ -150,7 +151,7 @@ ps: 截断的长度必须是整数
 分析：上面的代码也比较容易理解，这里就不多展开说了。时间复杂度也很容易看出来是O(n * len), len为木头中最大的长度。容易想到遍历长度时可以从大到小遍历，if (cnt >= k)成立，则该值即为最终结果，可直接break，但最坏时间复杂度没变。
 */
 
-func cutNum(nums []int, k int) {
+func cutNum1(nums []int, k int) {
 
 	//n := max(nums[0 ~ n-1])
 	maxLength := 10
@@ -161,16 +162,10 @@ func cutNum(nums []int, k int) {
 		for j := 0; j < len(nums); j++ {
 			cnt += nums[j] / m
 		}
-
-		fmt.Println(cnt, m)
-
 		if cnt >= k {
 			res = max(res, m)
 		}
 	}
-
-	fmt.Println(res)
-
 }
 
 func max(a, b int) int {
@@ -475,7 +470,10 @@ func quickSort(nums []int, left int, right int) {
 
 /**
 88. 合并两个有序数组
-给你两个按 ⾮非递减顺序 排列列的整数数组 nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数⽬目。 请你 合并 nums2 到 nums1 中，使合并后的数组同样按 ⾮非递减顺序 排列列。 注意:最终，合并后数组不不应由函数返回，⽽而是存储在数组 nums1 中。为了了应对这种情况，nums1 的初始⻓长度为 m + n，其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略略。nums2 的⻓长度为 n 。
+给你两个按 ⾮非递减顺序 排列列的整数数组 nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数⽬目。
+请你 合并 nums2 到 nums1 中，使合并后的数组同样按 ⾮非递减顺序 排列列。
+注意:最终，合并后数组不不应由函数返回，⽽而是存储在数组 nums1 中。为了了应对这种情况，nums1 的初始⻓长度为 m + n，
+其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略略。nums2 的⻓长度为 n 。
 示例例 1:
 输⼊入:nums1 = [1,2,3,0,0,0], m = 3, nums2 = [2,5,6], n = 3 输出:[1,2,2,3,5,6]
 解释:需要合并 [1,2,3] 和 [2,5,6] 。
@@ -557,14 +555,13 @@ func upper_bound_(nums []int, target int) int {
 比如 123 的倒序 321，不相等；121 的倒序 121，相等
 
 */
-func isHuiwenNum(num int) bool {
+func isPaliadNum1(num int) bool {
 	if num < 0 {
 		return false
 	}
 
 	total := 0
 	cur := num
-
 	for cur != 0 {
 		total = total*10 + cur%10
 		cur = cur / 10
