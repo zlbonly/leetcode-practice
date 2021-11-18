@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"sort"
 	"strings"
@@ -462,7 +463,7 @@ func LongestPalindromicSubstring(s string) int {
 	}
 
 	maxLength := 1
-	//str := ""
+	str := ""
 	for i := length - 1; i >= 0; i-- {
 		for j := i; j < length; j++ {
 			if s[j] == s[i] {
@@ -476,8 +477,12 @@ func LongestPalindromicSubstring(s string) int {
 			}
 
 			if dp[i][j] == true {
-				maxLength = max(maxLength, j-i+1)
-				//str = s[i:j+1]
+				length := j - i + 1
+				if maxLength <= length {
+					maxLength = length
+					str = s[i : j+1]
+					fmt.Printf("%v", str)
+				}
 			}
 		}
 	}
