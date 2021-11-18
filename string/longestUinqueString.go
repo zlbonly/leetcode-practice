@@ -442,6 +442,48 @@ func longestPalindrome(s string) string {
 	return ret
 }
 
+/*
+	解法二、二维动态规划
+	dp[i][j] 代表 i～j是回文串，则i+1,j-i 也必须是，因此，降序遍历i,升序遍历j.
+	当s[i] == s[j]时
+		1、则存在 i+1 <= j-i 也就是 j>=2 时 需要判断dp[i+1][j-1] 是否为ture
+		2、否则，dp[i][j] = true 必然等于true .因此回文串至少 a ,aba,aa 等。
+	当s[i] != s[j]时，直接跳过即可。
+
+*/
+func LongestPalindromicSubstring(s string) int {
+	length := len(s)
+	dp := make([][]bool, length)
+	for i := 0; i < length; i++ {
+		dp[i] = make([]bool, length)
+	}
+	for i := 0; i < length; i++ {
+		dp[i][i] = true
+	}
+
+	maxLength := 1
+	//str := ""
+	for i := length - 1; i >= 0; i-- {
+		for j := i; j < length; j++ {
+			if s[j] == s[i] {
+				if j-1 >= i+1 {
+					if dp[i+1][j-1] {
+						dp[i][j] = true
+					}
+				} else {
+					dp[i][j] = true
+				}
+			}
+
+			if dp[i][j] == true {
+				maxLength = max(maxLength, j-i+1)
+				//str = s[i:j+1]
+			}
+		}
+	}
+	return maxLength
+}
+
 // 判断是否是回文字符串
 func isPalindromic(s string) bool {
 	length := len(s)

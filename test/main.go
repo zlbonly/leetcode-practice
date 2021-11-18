@@ -12,7 +12,65 @@ type Student2 struct {
 	Name string
 	Age int
 }*/
+
+func longestPalindrome(s string) string {
+	length := len(s)
+	maxLength := 0
+	var ret string
+
+	for i := 0; i < length; i++ {
+		for j := i + 1; j < length; j++ {
+			temp := s[i : j+1]
+			if isPalindromic(temp) && len(temp) > maxLength {
+				maxLength = Max(maxLength, len(temp))
+				ret = temp
+			}
+		}
+	}
+	return ret
+}
+
+// 判断是否是回文字符串
+func isPalindromic(s string) bool {
+	length := len(s)
+	for i := 0; i < length/2; i++ {
+		if s[i] != s[length-i-1] {
+			return false
+		}
+	}
+	return true
+}
+
+func Max(a int, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
+	}
+}
+
 func main() {
+	s := "babad"
+
+	fmt.Printf("%v", s[0:2])
+	t := LongestPalindromicSubstring(s)
+	fmt.Printf("%v", t)
+	/*num := 1002341
+	chineseMap := []string{"圆整", "十", "百", "千", "万", "十", "百", "千", "亿", "十", "百", "千"}
+	chineseNum := []string{"零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"}
+	listNum := []int{}
+	for ; num > 0; num = num / 10 {
+		listNum = append(listNum, num%10)
+	}
+	n := len(listNum)
+	chinese := ""
+	//注意这里是倒序的
+	for i := n - 1; i >= 0; i-- {
+		chinese = fmt.Sprintf(
+			"%s%s%s", chinese, chineseNum[listNum[i]], chineseMap[i])
+	}
+	fmt.Printf("listnum:%v", listNum)
+	fmt.Printf("chinese:%v", chinese)*/
 
 	/*node1 := &ListNode{Val:1}
 	node2 := &ListNode{Val:2}
@@ -30,7 +88,7 @@ func main() {
 
 	t := removenode(node1)*/
 
-	node1 := &ListNode2{
+	/*node1 := &ListNode2{
 		Val:    1,
 		Next:   nil,
 		Random: nil,
@@ -58,7 +116,7 @@ func main() {
 
 		}
 		t = t.Next
-	}
+	}*/
 }
 
 type ListNode2 struct {
