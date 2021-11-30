@@ -869,8 +869,7 @@ func addTwoNumbersI(l1 *ListNode, l2 *ListNode) *ListNode {
 */
 func reverseBetWeen(head *ListNode, m int, n int) *ListNode {
 	dump := &ListNode{Val: -1, Next: head}
-	pre := dump
-	g, p := pre, pre.Next
+	g, p := dump, dump.Next
 
 	// 将指针移动到相应位置
 	for i := 0; i < m-1; i++ {
