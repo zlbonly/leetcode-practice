@@ -227,25 +227,27 @@ func minWindow(s string, t string) string {
 dp[i][j]  =
               {			max(dp[i-1][j],dp[i][j-1]), text1[i]  != text2[j]
 
+// 注意i和j 索引边界。
+
 https://leetcode-cn.com/problems/longest-common-subsequence/solution/zui-chang-gong-gong-zi-xu-lie-tu-jie-dpz-6mvz/
 */
 func longestCommonSubSequence(text1 string, text2 string) int {
 	m, n := len(text1), len(text2)
-	dp := make([][]int, m)
+	dp := make([][]int, m+1)
 	for i, _ := range dp {
-		dp[i] = make([]int, n)
+		dp[i] = make([]int, n+1)
 	}
 	dp[0][0] = 0
-	for i := 1; i < m; i++ {
-		for j := 1; j < n; j++ {
-			if text1[i] == text2[j] {
+	for i := 1; i <= m; i++ {
+		for j := 1; j <= n; j++ {
+			if text1[i-1] == text2[j-1] {
 				dp[i][j] = dp[i-1][j-1] + 1
 			} else {
-				dp[i][j] = max(dp[i-1][j], dp[i][j-1]) + 1
+				dp[i][j] = max(dp[i][j-1], dp[i-1][j])
 			}
 		}
 	}
-	return dp[m-1][n-1]
+	return dp[m][n]
 }
 
 /*func longestCommonSubsequence(text1 string, text2 string) int {
@@ -414,9 +416,7 @@ func longestPalindromeSubseq(s string) int {
 /**
 8、最长回文子串
 给你一个字符串 s，找到 s 中最长的回文子串。
-
 注意： 最长回文子串要求一定是连续的。
-
 示例 1：
 输入：s = "babad"
 输出："bab"
@@ -424,7 +424,6 @@ func longestPalindromeSubseq(s string) int {
 
 暴力破解法：
 暴力求解，列举所有的子串，判断是否为回文串，保存最长的回文串。
-
 时间复杂度：两层 for 循环O(n²），for 循环里边判断是否为回文 O(n），所以时间复杂度为O(n³）。
 空间复杂度：O(1），常数个变量。
 */
